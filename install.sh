@@ -61,17 +61,25 @@ else
     mv $base_path/pycritty/fonts.yaml $base_path
 fi
 
-message "Creating executable..."
 bin_dir=~/.local/bin
 if [ ! -d $bin_dir ]; then
     mkdir $bin_dir
 fi
 
-ln -s $bin_dir/pycritty $base_path/pycritty/src/main.py
+if [ -f $bin_dir/pycritty ]; then
+    warn "Executable already exists, skipping..."
+else
+    message "Creating executable..."
+    ln -s $base_path/pycritty/src/main.py $bin_dir/pycritty
+fi
 
-if [[ ! $bin_dir == *$PATH* ]] || [[ ! "~/.local/bin" == *$PATH* ]]; then
-    warn "$bin_dir not in $PATH, it will be added"
-    echo "export PATH=$PATH:$bin_dir" >> ~/.bash_profile
+if [[ ! $bin_dir == *"$PATH"* ]]; then
+    warn '~/.local/bin not in $PATH, it will be added'
+    echo -e "\nexport PATH=$PATH:$bin_dir" >> ~/.bash_profile
 fi
 
 message "DONE! Open a new terminal to start using pycritty"
+
+if [[ $1 == '-f' ]]; then
+    message "Installing fonts..."
+fi
