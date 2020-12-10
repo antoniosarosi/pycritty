@@ -22,7 +22,7 @@ ln -s pycritty/fonts.yaml fonts.yaml
 ln -s pycritty/themes themes
 ln -s pycritty/src/main.py ~/.local/bin/pycritty
 chmod 755 pycritty/src/main.py
-echo 'export PATH=$PATH:~/.local/bin'
+echo 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
 ```
 
 ## Usage:
