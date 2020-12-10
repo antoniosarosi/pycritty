@@ -9,13 +9,13 @@ from alacritty import Alacritty, ConfigError
 import argparse
 
 
-def main():    
+def main():
     parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
-    parser.add_argument('-t', '--theme', type=str, help='Color scheme')
-    parser.add_argument('-f', '--font', type=str, help='Terminal font')
-    parser.add_argument('-s', '--size', type=float, help='Font size')
-    parser.add_argument('-o', '--opacity', type=float, help='Transparency')
-    parser.add_argument('-p', '--padding', type=int, nargs=2, help='Padding')
+    parser.add_argument('-t', '--theme', type=str)
+    parser.add_argument('-f', '--font', type=str)
+    parser.add_argument('-s', '--size', type=float)
+    parser.add_argument('-o', '--opacity', type=float)
+    parser.add_argument('-p', '--padding', type=int, nargs=2)
 
     config = vars(parser.parse_args())
 

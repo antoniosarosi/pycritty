@@ -42,7 +42,7 @@ class Alacritty:
     def save(self):
         with open(self.config_file,  'w') as f:
             yaml.dump(self.config, f)
-    
+
     def apply(self, **config):
         if config is None or len(config) < 1:
             raise ConfigError('No options provided')
@@ -82,7 +82,7 @@ class Alacritty:
 
         if 'font' not in self.config:
             self.config['font'] = {}
-        self.config['font']['size'] = size        
+        self.config['font']['size'] = size
 
     def change_font(self, font: str):
         if 'font' not in self.config:
@@ -124,7 +124,7 @@ class Alacritty:
             raise ConfigError('Opacity should be between 0.0 and 1.0')
 
         self.config['background_opacity'] = opacity
-        
+
     def change_padding(self, padding: List[int]):
         if len(padding) != 2:
             raise ConfigError('Padding should only have an x and y value')

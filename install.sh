@@ -21,9 +21,7 @@ message() {
 }
 
 program_exists() {
-    if ! command -v $1 &> /dev/null; then
-        error "Program $1 is not installed"
-    fi
+    command -v $1 &> /dev/null
 }
 
 if ! program_exists "git"; then
@@ -73,15 +71,62 @@ if [ -f $bin_dir/pycritty ]; then
 else
     message "Creating executable..."
     ln -s $base_path/pycritty/src/main.py $bin_dir/pycritty
+    chmod 755 $base_path/pycritty/src/main.py
 fi
 
-if [[ ! $bin_dir == *"$PATH"* ]]; then
+if ! echo $PATH | grep $bin_dir; then
     warn '~/.local/bin not in $PATH, it will be added'
     echo -e "\nexport PATH=$PATH:$bin_dir" >> ~/.bash_profile
 fi
 
-message "DONE! Open a new terminal to start using pycritty"
+message "\nPycritty installed successfully. Open a new terminal to test it!"
 
-if [[ $1 == '-f' ]]; then
-    message "Installing fonts..."
+echo "Install fonts? (default: No) [y/n]: "
+read install_fonts
+
+if [[ $install_fonts != [yY] ]]; then
+    exit 0
 fi
+
+if ! program_exists "unzip"; then
+    error "Fonts could not be installed, unzip command not available"
+fi
+
+fonts=(
+    # Agave
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Agave.zip'
+    # Caskaydia
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip'
+    # DaddyTimeMono
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/DaddyTimeMono.zip'
+    # Hack
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip'
+    # Hurmit
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hermit.zip'
+    # Iosevka
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Iosevka.zip'
+    # JetBrains
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/JetBrainsMono.zip'
+    # Mononoki
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip'
+    # UbuntuMono
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/UbuntuMono.zip'
+    # SpaceMono
+    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/SpaceMono.zip'
+)
+
+fonts_dir=~/.local/share/fonts
+if [ ! -d $fonts_dir ]; then
+    warn "Creating directory ~/.local/share/fonts"
+    mkdir -p $fonts_dir
+fi
+
+message "Installing fonts..."
+for font in ${fonts[@]}; do
+    curl -L "$font" -o $fonts_dir/font.zip
+    unzip $fonts_dir/font.zip -d $fonts_dir
+done
+
+rm $fonts_dir/font.zip
+
+message "\nFonts installed successfully!"
