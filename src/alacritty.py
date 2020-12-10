@@ -1,4 +1,3 @@
-from sys import stderr
 from pathlib import Path
 from collections.abc import Mapping
 import yaml
@@ -34,9 +33,9 @@ class Alacritty:
                 ).format(yaml_file.name, e))
 
     def apply(self):
-        # with open(self.config_file) as f:
-        #     yaml.dump(self.config, f)
-        print(yaml.dump(self.config))
+        with open(self.config_file,  'w') as f:
+            yaml.dump(self.config, f)
+        # print(yaml.dump(self.config))
 
     def change_theme(self, theme: str):
         if theme is None:
@@ -98,3 +97,20 @@ class Alacritty:
 
         for t in font_types:
             self.config['font'][t]['family'] = fonts[font][t]
+
+    def change_opacity(self, opacity=1.0):
+        if opacity is None:
+            return
+        if opacity > 1.0 or opacity < 0:
+            raise ConfigError('Opacity should be between 0.0 and 1.0')
+
+        self.config['background_opacity'] = opacity
+        
+    def change_padding(self, x: float, y: float):
+        if 'window' not in self.config:
+            self.config['window'] = {}
+        if 'padding' not in self.config['window']:
+            self.config['window']['padding'] = {}
+
+        self.config['window']['padding']['x'] = x
+        self.config['window']['padding']['y'] = y
