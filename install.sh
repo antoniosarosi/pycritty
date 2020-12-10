@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Pycritty install script
+
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 YELLOW="\033[0;33m"
@@ -36,7 +38,7 @@ base_path=~/.config/alacritty
 
 if [ ! -d $base_path ]; then
     warn "WARNING: Alacritty config directory not present, it will be created"
-    mkdir $base_path
+    mkdir -p $base_path
 fi
 
 if [ ! -f "$base_path/alacritty.yml" ]; then
@@ -51,19 +53,19 @@ if [ -d $base_path/themes ]; then
     warn "Themes directory already exists, skipping..."
 else
     message "Creating themes directory..."
-    mv $base_path/pycritty/themes $base_path
+    ln -s $base_path/pycritty/themes $base_path/themes
 fi
 
 if [ -f $base_path/fonts.yaml ]; then
     warn "fonts.yaml already exists, skipping..."
 else
     message "Creating fonts file..."
-    mv $base_path/pycritty/fonts.yaml $base_path
+    ln -s $base_path/pycritty/fonts.yaml $base_path/fonts.yaml
 fi
 
 bin_dir=~/.local/bin
 if [ ! -d $bin_dir ]; then
-    mkdir $bin_dir
+    mkdir -p $bin_dir
 fi
 
 if [ -f $bin_dir/pycritty ]; then

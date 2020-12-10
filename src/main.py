@@ -1,32 +1,28 @@
 #!/usr/bin/env python
 
+# Pycritty
 # Antonio Sarosi
-# https://youtube.com/c/antoniosarosi
-# https://github.com/antoniosarosi/dotfiles
+# December 9, 2020
 
 from sys import stderr
 from alacritty import Alacritty, ConfigError
-from argparse import ArgumentParser
+import argparse
 
 
 def main():    
-    parser = ArgumentParser()
+    parser = argparse.ArgumentParser(argument_default=argparse.SUPPRESS)
     parser.add_argument('-t', '--theme', type=str, help='Color scheme')
     parser.add_argument('-f', '--font', type=str, help='Terminal font')
     parser.add_argument('-s', '--size', type=float, help='Font size')
     parser.add_argument('-o', '--opacity', type=float, help='Transparency')
     parser.add_argument('-p', '--padding', type=int, nargs=2, help='Padding')
 
-    args = parser.parse_args()
-    
+    config = vars(parser.parse_args())
+
     try:
         alacritty = Alacritty()
-        alacritty.change_theme(args.theme)
-        alacritty.change_font(args.font, args.size)
-        alacritty.change_opacity(args.opacity)
-        if args.padding:
-            alacritty.change_padding(args.padding[0], args.padding[1])
-        alacritty.apply()
+        alacritty.apply(**config)
+        alacritty.save()
     except ConfigError as e:
         print(e, file=stderr)
         exit(1)
