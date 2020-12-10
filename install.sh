@@ -32,7 +32,7 @@ if ! program_exists "alacritty"; then
     warn "WARNING: Alacritty is not installed"
 fi
 
-base_path="~/.config/alacritty"
+base_path=~/.config/alacritty
 
 if [ ! -d $base_path ]; then
     warn "WARNING: Alacritty config directory not present, it will be created"
@@ -45,16 +45,16 @@ if [ ! -f "$base_path/alacritty.yml" ]; then
 fi
 
 message "Cloning repository..."
-git clone https://github.com/antoniosarosi/pycritty $base_path
+git clone https://github.com/antoniosarosi/pycritty $base_path/pycritty
 
-if [ ! -d $base_path/themes ]; then
+if [ -d $base_path/themes ]; then
     warn "Themes directory already exists, skipping..."
 else
     message "Creating themes directory..."
     mv $base_path/pycritty/themes $base_path
 fi
 
-if [ ! -f $base_path/fonts.yaml ]; then
+if [ -f $base_path/fonts.yaml ]; then
     warn "fonts.yaml already exists, skipping..."
 else
     message "Creating fonts file..."
@@ -62,16 +62,16 @@ else
 fi
 
 message "Creating executable..."
-bin_dir="~/.local/bin"
+bin_dir=~/.local/bin
 if [ ! -d $bin_dir ]; then
     mkdir $bin_dir
 fi
 
-ln -s $base_path/pycritty/src/main.py $bin_dir/pycritty
+ln -s $bin_dir/pycritty $base_path/pycritty/src/main.py
 
-if [[ ! $bin_dir == *$PATH* -o ! "$HOME/.local/bin" == *$PATH* ]]; then
+if [[ ! $bin_dir == *$PATH* ]] || [[ ! "~/.local/bin" == *$PATH* ]]; then
     warn "$bin_dir not in $PATH, it will be added"
-    echo "export PATH=$PATH:$bin_dir" >> ~/.bashrc
+    echo "export PATH=$PATH:$bin_dir" >> ~/.bash_profile
 fi
 
 message "DONE! Open a new terminal to start using pycritty"
