@@ -101,6 +101,10 @@ class Alacritty:
             'bright': expected_colors,
         }
 
+        for k in expected_props:
+            if k not in theme_yaml['colors']:
+                log.warn(f'Missing "colors:{k}" for theme "{name}"')
+
         for k in theme_yaml['colors']:
             if k in expected_props:
                 for v in expected_props[k]:

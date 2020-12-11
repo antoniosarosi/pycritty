@@ -12,7 +12,7 @@ class Color(Enum):
         return self.value
 
 
-def color_print(color: Color, message, output=stdout):
+def color_print(color: Color, message: str, output=stdout):
     print(f'{color}{message}{Color.RESET}', file=output)
 
 
