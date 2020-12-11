@@ -45,7 +45,7 @@ class Alacritty:
         with open(self.config_file,  'w') as f:
             yaml.dump(self.config, f)
 
-    def apply(self, **config) -> bool:
+    def apply(self, **config):
         if config is None or len(config) < 1:
             raise ConfigError('No options provided, check --help')
 
