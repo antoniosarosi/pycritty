@@ -76,13 +76,12 @@ fi
 
 if ! echo $PATH | grep $bin_dir; then
     warn '~/.local/bin not in $PATH, it will be added'
-    echo -e "\nexport PATH=$PATH:$bin_dir" >> ~/.bash_profile
+    echo -e "\nexport PATH=$PATH:$bin_dir" >> ~/.bashrc
 fi
 
 message "\nPycritty installed successfully. Open a new terminal to test it!"
 
-echo "Install fonts? (default: No) [y/n]: "
-read install_fonts
+read -p "Install fonts? (default: No) [y/n]: " install_fonts
 
 if [[ $install_fonts != [yY] ]]; then
     exit 0
