@@ -6,6 +6,7 @@ from typing import List, Dict, Any
 from collections.abc import Mapping
 from pathlib import Path
 import yaml
+import log
 
 
 class ConfigError(Exception):
@@ -26,6 +27,7 @@ class Alacritty:
         self.config = self._load(self.config_file)
         if self.config is None:
             self.config = {}
+            log.warn('Alacritty config file was empty')
 
     def _load(self, yaml_file: Path) -> Dict[str, Any]:
         with open(yaml_file) as f:
@@ -43,9 +45,9 @@ class Alacritty:
         with open(self.config_file,  'w') as f:
             yaml.dump(self.config, f)
 
-    def apply(self, **config):
+    def apply(self, **config) -> bool:
         if config is None or len(config) < 1:
-            raise ConfigError('No options provided')
+            raise ConfigError('No options provided, check --help')
 
         actions = {
             'theme': self.change_theme,
@@ -55,26 +57,58 @@ class Alacritty:
             'padding': self.change_padding,
         }
 
+        errors_found = 0
         for param, action in actions.items():
             if param in config:
-                action(config[param])
+                try:
+                    action(config[param])
+                except ConfigError as e:
+                    log.err(e)
+                    errors_found += 1
 
-    def change_theme(self, theme: str):
+        if errors_found > 0:
+            raise ConfigError(f'\n{errors_found} errors found')
+
+    def change_theme(self, name: str):
         themes_directory = self.base_path / 'themes'
         if not themes_directory.exists():
             raise ConfigError(f'Themes directory not found')
 
-        theme_file = themes_directory / f'{theme}.yaml'
+        theme_file = themes_directory / f'{name}.yaml'
         if not theme_file.exists():
-            raise ConfigError(f'Theme {theme} not found')
+            raise ConfigError(f'Theme {name} not found')
 
-        theme = self._load(theme_file)
-        if theme is None:
+        theme_yaml = self._load(theme_file)
+        if theme_yaml is None:
             raise ConfigError(f'File {theme_file.name} is empty')
-        if 'colors' not in theme:
+        if 'colors' not in theme_yaml:
             raise ConfigError(f'{theme_file} does not contain color config')
 
-        self.config['colors'] = theme['colors']
+        expected_colors = [
+            'black',
+            'red',
+            'green',
+            'yellow',
+            'blue',
+            'magenta',
+            'cyan',
+            'white',
+        ]
+
+        expected_props = {
+            'primary': ['background', 'foreground'],
+            'normal': expected_colors,
+            'bright': expected_colors,
+        }
+
+        for k in theme_yaml['colors']:
+            if k in expected_props:
+                for v in expected_props[k]:
+                    if v not in theme_yaml['colors'][k]:
+                        log.warn(f'Missing "colors:{k}:{v}" for theme "{name}"')
+
+        self.config['colors'] = theme_yaml['colors']
+        log.msg(f'Theme {name} applied')
 
     def change_font_size(self, size: float):
         if size <= 0:
@@ -82,11 +116,14 @@ class Alacritty:
 
         if 'font' not in self.config:
             self.config['font'] = {}
+            log.warn('"font" prop config was not present in alacritty.yml')
         self.config['font']['size'] = size
+        log.msg(f'Font size set to {size:.1f}')
 
     def change_font(self, font: str):
         if 'font' not in self.config:
             self.config['font'] = {}
+            log.warn('"font" prop was not present in alacritty.yml')
 
         fonts_file = self.base_path / 'fonts.yaml'
         if not fonts_file.exists():
@@ -119,11 +156,14 @@ class Alacritty:
                 self.config['font'][t] = {'family': 'tmp'}
             self.config['font'][t]['family'] = fonts['fonts'][font][t]
 
+        log.msg(f'Font {font} applied')
+
     def change_opacity(self, opacity: float):
         if opacity < 0.0 or opacity > 1.0:
             raise ConfigError('Opacity should be between 0.0 and 1.0')
 
         self.config['background_opacity'] = opacity
+        log.msg(f'Opacity set to {opacity:.2f}')
 
     def change_padding(self, padding: List[int]):
         if len(padding) != 2:
@@ -132,8 +172,11 @@ class Alacritty:
         x, y = padding
         if 'window' not in self.config:
             self.config['window'] = {}
+            log.warn('"window" prop was not present in config file')
         if 'padding' not in self.config['window']:
             self.config['window']['padding'] = {}
+            log.warn('"padding" prop was not present in config file')
 
         self.config['window']['padding']['x'] = x
         self.config['window']['padding']['y'] = y
+        log.msg(f'Padding set to x: {x}, y: {y}')

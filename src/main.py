@@ -5,9 +5,9 @@
 # December 9, 2020
 
 from typing import Dict, Any
-from sys import stderr
-from alacritty import Alacritty, ConfigError
 import argparse
+from alacritty import Alacritty, ConfigError
+import log
 
 
 def args() -> Dict[str, Any]:
@@ -27,7 +27,7 @@ def main():
         alacritty.apply(**args())
         alacritty.save()
     except ConfigError as e:
-        print(e, file=stderr)
+        log.err(e)
         exit(1)
 
 
