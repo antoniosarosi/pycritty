@@ -44,8 +44,12 @@ if [ ! -f "$base_path/alacritty.yml" ]; then
     touch $base_path/alacritty.yml
 fi
 
-message "Cloning repository..."
-git clone https://github.com/antoniosarosi/pycritty $base_path/pycritty
+if [ -d "$base_path/pycritty" ]; then
+    warn "Pycritty is already installed, skipping..."
+else
+    message "Cloning repository..."
+    git clone https://github.com/antoniosarosi/pycritty $base_path/pycritty
+fi
 
 if [ -d $base_path/themes ]; then
     warn "Themes directory already exists, skipping..."
@@ -63,6 +67,7 @@ fi
 
 bin_dir=~/.local/bin
 if [ ! -d $bin_dir ]; then
+    warn "~/.local/bin does not exists, creating directory..."
     mkdir -p $bin_dir
 fi
 
@@ -75,7 +80,7 @@ else
 fi
 
 if ! echo $PATH | grep $bin_dir; then
-    warn '~/.local/bin not in $PATH, it will be added'
+    warn '~/.local/bin not in $PATH, it will be added to your ~/.bashrc'
     echo -e "\nexport PATH=$PATH:$bin_dir" >> ~/.bashrc
 fi
 
@@ -85,6 +90,10 @@ read -p "Install fonts? (default: No) [y/n]: " install_fonts
 
 if [[ $install_fonts != [yY] ]]; then
     exit 0
+fi
+
+if ! program_exists "curl"; then
+    error "Fonts could not be installed, curl command not available"
 fi
 
 if ! program_exists "unzip"; then
@@ -121,11 +130,12 @@ if [ ! -d $fonts_dir ]; then
 fi
 
 message "Installing fonts..."
+tmp_file=pycritty_nerd_fonts_tmp.zip
 for font in ${fonts[@]}; do
-    curl -L "$font" -o $fonts_dir/font.zip
-    unzip $fonts_dir/font.zip -d $fonts_dir
+    curl -L "$font" -o $fonts_dir/$tmp_file
+    unzip $fonts_dir/$tmp_file -d $fonts_dir
 done
 
-rm $fonts_dir/font.zip
+rm $fonts_dir/$tmp_file
 
 message "\nFonts installed successfully!"

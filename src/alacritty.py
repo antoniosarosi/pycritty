@@ -2,7 +2,7 @@
 # Antonio Sarosi
 # December 10, 2020
 
-from typing import List, Dict
+from typing import List, Dict, Any
 from collections.abc import Mapping
 from pathlib import Path
 import yaml
@@ -27,7 +27,7 @@ class Alacritty:
         if self.config is None:
             self.config = {}
 
-    def _load(self, yaml_file: Path) -> Dict[str, any]:
+    def _load(self, yaml_file: Path) -> Dict[str, Any]:
         with open(yaml_file) as f:
             try:
                 return yaml.load(f, Loader=yaml.FullLoader)
