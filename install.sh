@@ -131,16 +131,16 @@ if [ ! -d $fonts_dir ]; then
     mkdir -p $fonts_dir
 fi
 
-message "\nInstalling fonts..."
+message "Installing fonts..."
 tmp_file=pycritty_nerd_fonts_tmp.zip
 for font in ${!fonts[@]}; do
     link=${fonts[${font}]}
-    echo  "Downloading" `color_print $CYAN "$link"`
+    echo -n "Downloading "; color_print $CYAN "$link"
     curl -sL "$link" -o $fonts_dir/$tmp_file
-    echo "Installing font" `color_print $PURPLE "$font"`
+    echo -n "Installing font "; color_print $PURPLE "$font"
     unzip -qn $fonts_dir/$tmp_file -d $fonts_dir
 done
 
 rm $fonts_dir/$tmp_file
 
-message "\nFonts installed successfully!"
+message "Fonts installed successfully!"
