@@ -79,7 +79,7 @@ else
     chmod 755 $base_path/pycritty/src/main.py
 fi
 
-if ! echo $PATH | grep $bin_dir; then
+if ! echo $PATH | grep $bin_dir &> /dev/null; then
     warn '~/.local/bin not in $PATH, it will be added to your ~/.bashrc'
     echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
 fi
