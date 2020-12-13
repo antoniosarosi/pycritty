@@ -193,6 +193,8 @@ class Alacritty:
             log.color_print('Themes:', log.Color.BOLD)
             for file in themes_dir.iterdir():
                 log.color_print(f'    {file.name.split(".")[0]}', log.Color.BLUE)
+            else:
+                log.warn('Themes directory is empty, cannot list themes')
 
         def list_fonts():
             fonts_file = self.base_path / 'fonts.yaml'
@@ -200,12 +202,12 @@ class Alacritty:
                 raise ConfigError('Cannot list fonts, fonts.yaml not found')
 
             fonts = self._load(fonts_file)
-            if 'fonts' not in fonts:
-                raise ConfigError('Cannot list fonts, font file does have any')
-
-            log.color_print('Fonts:', log.Color.BOLD)
-            for font in fonts['fonts']:
-                log.color_print(f'    {font}', log.Color.PURPLE)
+            if fonts is None or 'fonts' not in fonts:
+                log.warn('Cannot list fonts, no fonts found')
+            else:
+                log.color_print('Fonts:', log.Color.BOLD)
+                for font in fonts['fonts']:
+                    log.color_print(f'    {font}', log.Color.PURPLE)
 
         options = {
             'themes': list_themes,
