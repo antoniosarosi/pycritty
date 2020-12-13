@@ -14,20 +14,24 @@ ITALIC='\033[3m'
 NORMAL="\033[0m"
 
 color_print() {
-    echo -e "$1$2$NORMAL"
+    if [ -t 1 ]; then
+        echo -e "$1$2$NORMAL" 
+    else
+        echo "$2"
+    fi
 }
 
 warn() {
-    color_print "$YELLOW$1" >&2
+    color_print $YELLOW "$1" >&2
 }
 
 error() {
-    color_print "$RED$1" >&2
+    color_print $RED "$1" >&2
     exit 1
 }
 
 message() {
-    color_print "$GREEN$1"
+    color_print $GREEN "$1"
 }
 
 program_exists() {
