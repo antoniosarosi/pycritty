@@ -18,11 +18,11 @@ class Alacritty:
     def __init__(self):
         self.base_path = Path().home() / '.config' / 'alacritty'
         if not self.base_path.exists():
-            raise ConfigError(f'Alacritty directory not found')
+            raise ConfigError('Alacritty directory not found')
 
         self.config_file = self.base_path / 'alacritty.yml'
         if not self.config_file.exists():
-            raise ConfigError(f'Alacritty config file not found')
+            raise ConfigError('Alacritty config file not found')
 
         self.config = self._load(self.config_file)
         if self.config is None:
@@ -47,7 +47,7 @@ class Alacritty:
 
     def apply(self, **config):
         if config is None or len(config) < 1:
-            raise ConfigError('No options provided, check --help')
+            raise ConfigError('No options provided')
 
         actions = {
             'theme': self.change_theme,
@@ -55,6 +55,7 @@ class Alacritty:
             'size': self.change_font_size,
             'opacity': self.change_opacity,
             'padding': self.change_padding,
+            'list': self.list,
         }
 
         errors_found = 0
@@ -182,3 +183,39 @@ class Alacritty:
         self.config['window']['padding']['x'] = x
         self.config['window']['padding']['y'] = y
         log.msg(f'Padding set to x: {x}, y: {y}')
+
+    def list(self, to_be_listed: str):
+        def list_themes():
+            themes_dir = self.base_path / 'themes'
+            if not themes_dir.is_symlink() or not themes_dir.is_dir():
+                raise ConfigError('Cannot list themes, directory not found')
+
+            log.color_print('Themes:', log.Color.BOLD)
+            for file in themes_dir.iterdir():
+                log.color_print(f'    {file.name.split(".")[0]}', log.Color.BLUE)
+
+        def list_fonts():
+            fonts_file = self.base_path / 'fonts.yaml'
+            if not fonts_file.is_symlink() or not fonts_file.is_file():
+                raise ConfigError('Cannot list fonts, fonts.yaml not found')
+
+            fonts = self._load(fonts_file)
+            if 'fonts' not in fonts:
+                raise ConfigError('Cannot list fonts, font file does have any')
+
+            log.color_print('Fonts:', log.Color.BOLD)
+            for font in fonts['fonts']:
+                log.color_print(f'    {font}', log.Color.PURPLE)
+
+        options = {
+            'themes': list_themes,
+            'fonts': list_fonts,
+        }
+
+        if to_be_listed == 'all':
+            for _, list_function in options.items():
+                list_function()
+        else:
+            if to_be_listed not in options:
+                raise ConfigError(f'Cannot list {to_be_listed}, unknown option')
+            options[to_be_listed]()
