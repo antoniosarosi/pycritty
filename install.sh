@@ -30,7 +30,7 @@ error() {
     exit 1
 }
 
-message() {
+ok() {
     color_print $GREEN "$1"
 }
 
@@ -61,21 +61,21 @@ fi
 if [ -d "$base_path/pycritty" ]; then
     warn "Pycritty is already installed, skipping..."
 else
-    message "Cloning repository..."
+    echo "Cloning repository..."
     git clone https://github.com/antoniosarosi/pycritty $base_path/pycritty
 fi
 
 if [ -d $base_path/themes ]; then
     warn "Themes directory already exists, skipping..."
 else
-    message "Creating themes directory..."
+    echo "Creating themes directory..."
     cp -r $base_path/pycritty/config/themes $base_path/themes
 fi
 
 if [ -f $base_path/fonts.yaml ]; then
     warn "fonts.yaml already exists, skipping..."
 else
-    message "Creating fonts file..."
+    echo "Creating fonts file..."
     cp $base_path/pycritty/config/fonts.yaml $base_path/fonts.yaml
 fi
 
@@ -88,7 +88,7 @@ fi
 if [ -f $bin_dir/pycritty ]; then
     warn "Executable already exists, skipping..."
 else
-    message "Creating executable..."
+    echo "Creating executable..."
     ln -s $base_path/pycritty/src/main.py $bin_dir/pycritty
     chmod 755 $base_path/pycritty/src/main.py
 fi
@@ -98,7 +98,7 @@ if ! echo $PATH | grep $bin_dir &> /dev/null; then
     echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
 fi
 
-message "Pycritty installed successfully. Open a new terminal to test it!"
+ok "Pycritty installed successfully. Open a new terminal to test it!"
 
 if [[ $1 != 'fonts' ]]; then
     exit 0
@@ -131,7 +131,7 @@ if [ ! -d $fonts_dir ]; then
     mkdir -p $fonts_dir
 fi
 
-message "Installing fonts..."
+echo "Installing fonts..."
 tmp_file=pycritty_nerd_fonts_tmp.zip
 for font in ${!fonts[@]}; do
     link=${fonts[${font}]}
@@ -143,4 +143,4 @@ done
 
 rm $fonts_dir/$tmp_file
 
-message "Fonts installed successfully!"
+ok "Fonts installed successfully!"

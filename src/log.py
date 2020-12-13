@@ -33,5 +33,5 @@ def err(message: str):
     color_print(message, Color.RED, stderr)
 
 
-def msg(message: str):
+def ok(message: str):
     color_print(message, Color.GREEN)

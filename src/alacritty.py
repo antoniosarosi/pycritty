@@ -111,7 +111,7 @@ class Alacritty:
                     log.warn(f'Missing "colors:{k}:{v}" for theme "{name}"')
 
         self.config['colors'] = theme_yaml['colors']
-        log.msg(f'Theme {name} applied')
+        log.ok(f'Theme {name} applied')
 
     def change_font_size(self, size: float):
         if size <= 0:
@@ -121,7 +121,7 @@ class Alacritty:
             self.config['font'] = {}
             log.warn('"font" prop config was not present in alacritty.yml')
         self.config['font']['size'] = size
-        log.msg(f'Font size set to {size:.1f}')
+        log.ok(f'Font size set to {size:.1f}')
 
     def change_font(self, font: str):
         if 'font' not in self.config:
@@ -159,14 +159,14 @@ class Alacritty:
                 self.config['font'][t] = {'family': 'tmp'}
             self.config['font'][t]['family'] = fonts['fonts'][font][t]
 
-        log.msg(f'Font {font} applied')
+        log.ok(f'Font {font} applied')
 
     def change_opacity(self, opacity: float):
         if opacity < 0.0 or opacity > 1.0:
             raise ConfigError('Opacity should be between 0.0 and 1.0')
 
         self.config['background_opacity'] = opacity
-        log.msg(f'Opacity set to {opacity:.2f}')
+        log.ok(f'Opacity set to {opacity:.2f}')
 
     def change_padding(self, padding: List[int]):
         if len(padding) != 2:
@@ -182,7 +182,7 @@ class Alacritty:
 
         self.config['window']['padding']['x'] = x
         self.config['window']['padding']['y'] = y
-        log.msg(f'Padding set to x: {x}, y: {y}')
+        log.ok(f'Padding set to x: {x}, y: {y}')
 
     def list(self, to_be_listed: str):
         def list_themes():
