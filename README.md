@@ -29,7 +29,7 @@ cp pycritty/config/fonts.yaml fonts.yaml
 cp -r pycritty/config/themes themes
 # Create executable
 mkdir -p ~/.local/bin
-ln -s pycritty/src/main.py ~/.local/bin/pycritty
+ln -s ~/.config/alacritty/pycritty/src/main.py ~/.local/bin/pycritty
 chmod 755 pycritty/src/main.py
 # Add ~/.local/bin to $PATH
 echo 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
