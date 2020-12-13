@@ -9,8 +9,8 @@ Change your alacritty config on the fly!
 ### Install Script
 
 ```bash
-curl "https://raw.githubusercontent.com/antoniosarosi/pycritty/master/install.sh" |
-bash -s [fonts]
+curl -sL "https://raw.githubusercontent.com/antoniosarosi/pycritty/master/install.sh" \
+| bash -s [fonts]
 ```
 
 If ```fonts``` param is present, the script will also install the fonts used
