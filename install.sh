@@ -5,19 +5,29 @@
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 YELLOW="\033[0;33m"
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+
+BOLD='\033[1m'
+ITALIC='\033[3m'
 NORMAL="\033[0m"
 
+color_print() {
+    echo -e "$1$2$NORMAL"
+}
+
 warn() {
-    echo -e "${YELLOW}$1${NORMAL}" >&2
+    color_print "$YELLOW$1" >&2
 }
 
 error() {
-    echo -e "${RED}$1${NORMAL}" >&2
+    color_print "$RED$1" >&2
     exit 1
 }
 
 message() {
-    echo -e "${GREEN}$1${NORMAL}"
+    color_print "$GREEN$1"
 }
 
 program_exists() {
@@ -84,7 +94,7 @@ if ! echo $PATH | grep $bin_dir &> /dev/null; then
     echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
 fi
 
-message "\nPycritty installed successfully. Open a new terminal to test it!"
+message "Pycritty installed successfully. Open a new terminal to test it!"
 
 if [[ $1 != 'fonts' ]]; then
     exit 0
@@ -98,27 +108,17 @@ if ! program_exists "unzip"; then
     error "Fonts could not be installed, unzip command not available"
 fi
 
-fonts=(
-    # Agave
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Agave.zip'
-    # Caskaydia
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip'
-    # DaddyTimeMono
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/DaddyTimeMono.zip'
-    # Hack
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip'
-    # Hurmit
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hermit.zip'
-    # Iosevka
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Iosevka.zip'
-    # JetBrains
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/JetBrainsMono.zip'
-    # Mononoki
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip'
-    # UbuntuMono
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/UbuntuMono.zip'
-    # SpaceMono
-    'https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/SpaceMono.zip'
+declare -A fonts=(
+    [Agave]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Agave.zip'
+    [Caskaydia]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/CascadiaCode.zip'
+    [DaddyTimeMono]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/DaddyTimeMono.zip'
+    [Hack]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip'
+    [Hurmit]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hermit.zip'
+    [Iosevka]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Iosevka.zip'
+    [JetBrains]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/JetBrainsMono.zip'
+    [Mononoki]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Mononoki.zip'
+    [UbuntuMono]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/UbuntuMono.zip'
+    [SpaceMono]='https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/SpaceMono.zip'
 )
 
 fonts_dir=~/.local/share/fonts
@@ -127,11 +127,14 @@ if [ ! -d $fonts_dir ]; then
     mkdir -p $fonts_dir
 fi
 
-message "Installing fonts..."
+message "\nInstalling fonts..."
 tmp_file=pycritty_nerd_fonts_tmp.zip
-for font in ${fonts[@]}; do
-    curl -L "$font" -o $fonts_dir/$tmp_file
-    unzip $fonts_dir/$tmp_file -d $fonts_dir
+for font in ${!fonts[@]}; do
+    link=${fonts[${font}]}
+    echo  "Downloading" `color_print $CYAN "$link"`
+    curl -sL "$link" -o $fonts_dir/$tmp_file
+    echo "Installing font" `color_print $PURPLE "$font"`
+    unzip -qn $fonts_dir/$tmp_file -d $fonts_dir
 done
 
 rm $fonts_dir/$tmp_file
