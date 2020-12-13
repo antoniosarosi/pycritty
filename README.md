@@ -45,7 +45,7 @@ pycritty --help
 
 ## Fonts Config
 
-Fonts are configured in ```fonts.yaml``` with this format:
+Fonts are configured in ```~/.config/alacritty/fonts.yaml``` with this format:
 ```yaml
 fonts:
     Alias: Font Name
@@ -79,7 +79,8 @@ Note that the fonts must be installed on your system.
 ## Theme Config
 
 You can make your own custom themes by creating new theme files with the
-correct format, ```themes/custom.yaml``` should look like this:
+correct format, ```~/.config/alacritty/themes/custom.yaml``` should look like
+this:
 
 ```yaml
 colors:
