@@ -86,9 +86,7 @@ fi
 
 message "\nPycritty installed successfully. Open a new terminal to test it!"
 
-read -p "Install fonts? (default: No) [y/n]: " install_fonts
-
-if [[ $install_fonts != [yY] ]]; then
+if [[ $1 != 'fonts' ]]; then
     exit 0
 fi
 
