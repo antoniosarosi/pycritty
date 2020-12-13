@@ -196,7 +196,7 @@ class Alacritty:
 
         def list_fonts():
             fonts_file = self.base_path / 'fonts.yaml'
-            if fonts_file.is_file():
+            if not fonts_file.is_file():
                 raise ConfigError('Cannot list fonts, fonts.yaml not found')
 
             fonts = self._load(fonts_file)
