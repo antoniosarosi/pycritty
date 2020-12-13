@@ -187,7 +187,7 @@ class Alacritty:
     def list(self, to_be_listed: str):
         def list_themes():
             themes_dir = self.base_path / 'themes'
-            if not themes_dir.is_symlink() or not themes_dir.is_dir():
+            if not themes_dir.is_dir():
                 raise ConfigError('Cannot list themes, directory not found')
 
             log.color_print('Themes:', log.Color.BOLD)
@@ -196,7 +196,7 @@ class Alacritty:
 
         def list_fonts():
             fonts_file = self.base_path / 'fonts.yaml'
-            if not fonts_file.is_symlink() or not fonts_file.is_file():
+            if fonts_file.is_file():
                 raise ConfigError('Cannot list fonts, fonts.yaml not found')
 
             fonts = self._load(fonts_file)

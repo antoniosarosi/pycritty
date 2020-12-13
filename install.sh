@@ -55,14 +55,14 @@ if [ -d $base_path/themes ]; then
     warn "Themes directory already exists, skipping..."
 else
     message "Creating themes directory..."
-    ln -s $base_path/pycritty/themes $base_path/themes
+    cp -r $base_path/pycritty/config/themes $base_path/themes
 fi
 
 if [ -f $base_path/fonts.yaml ]; then
     warn "fonts.yaml already exists, skipping..."
 else
     message "Creating fonts file..."
-    ln -s $base_path/pycritty/fonts.yaml $base_path/fonts.yaml
+    cp $base_path/pycritty/config/fonts.yaml $base_path/fonts.yaml
 fi
 
 bin_dir=~/.local/bin

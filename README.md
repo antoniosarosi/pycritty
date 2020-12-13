@@ -19,9 +19,9 @@ curl "https://raw.githubusercontent.com/antoniosarosi/pycritty/master/install.sh
 mkdir -p ~/.config/alacritty
 cd ~/.config/alacritty
 git clone https://github.com/antoniosarosi/pycritty
-# Link themes and fonts configs
-ln -s pycritty/fonts.yaml fonts.yaml
-ln -s pycritty/themes themes
+# Create themes and fonts configs
+cp pycritty/config/fonts.yaml fonts.yaml
+cp -r pycritty/config/themes themes
 # Create executable
 mkdir -p ~/.local/bin
 ln -s pycritty/src/main.py ~/.local/bin/pycritty
