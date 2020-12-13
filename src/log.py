@@ -18,7 +18,10 @@ class Color(Enum):
         return self.value
 
 def color_print(message: str, color=Color.NORMAL, output=stdout):
-    print(f'{color}{message}{Color.NORMAL}', file=output)
+    if output.isatty(): 
+        print(f'{color}{message}{Color.NORMAL}', file=output)
+    else:
+        print(message, file=output)
 
 
 def warn(message: str):
