@@ -58,18 +58,18 @@ if [ ! -d $base_path ]; then
     mkdir -p $base_path
 fi
 
-if [ ! -f "$base_path/alacritty.yml" ]; then
+if [ ! -f $base_path/alacritty.yml ]; then
     warn "Alacritty config file not found"
     stderr_print "Creating file =>" $BLUE$base_path/alacritty.yml
     touch $base_path/alacritty.yml
 fi
 
-if [ -d "$base_path/pycritty" ]; then
+if [ -d $base_path/pycritty ]; then
     warn "Pycritty is already installed, skipping..."
 else
     repo="https://github.com/antoniosarosi/pycritty"
     color_print "Cloning repo =>" $CYAN$repo
-    git clone $repo  $base_path/pycritty
+    git clone -q $repo $base_path/pycritty
     if (( $? != 0 )); then
         error "Failed cloning repository, cannot install pycritty"
     fi
@@ -105,8 +105,10 @@ else
 fi
 
 if ! echo $PATH | grep $bin_dir &> /dev/null; then
-    warn '~/.local/bin not in $PATH, it will be added to your ~/.bashrc'
-    echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
+    warn '~/.local/bin not in $PATH'
+    new_path='export PATH="$PATH:$HOME/.local/bin"'
+    stderr_print "Creating new path =>$PURPLE echo $new_path >> ~/.bashrc"
+    echo $new_path >> ~/.bashrc
 fi
 
 ok "Pycritty installed successfully. Open a new terminal to test it!"
