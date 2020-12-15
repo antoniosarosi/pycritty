@@ -15,23 +15,27 @@ NORMAL="\033[0m"
 
 color_print() {
     if [ -t 1 ]; then
-        echo -e "$1$2$NORMAL" 
+        echo -e "$@$NORMAL"
     else
-        echo "$2"
+        echo "$@" | sed "s/\\\033\[[0-9;]*m//g"
     fi
 }
 
+stderr_print() {
+    color_print "$@" >&2
+}
+
 warn() {
-    color_print $YELLOW "$1" >&2
+    stderr_print "$YELLOW$1"
 }
 
 error() {
-    color_print $RED "$1" >&2
+    stderr_print "$RED$1"
     exit 1
 }
 
 ok() {
-    color_print $GREEN "$1"
+    color_print "$GREEN$1"
 }
 
 program_exists() {
@@ -49,46 +53,53 @@ fi
 base_path=~/.config/alacritty
 
 if [ ! -d $base_path ]; then
-    warn "WARNING: Alacritty config directory not present, it will be created"
+    warn "Alacritty config directory not found"
+    stderr_print "Creating dir =>" $BLUE$base_path
     mkdir -p $base_path
 fi
 
 if [ ! -f "$base_path/alacritty.yml" ]; then
-    warn "WARNING: Alacritty config file not present, it will be created"
+    warn "Alacritty config file not found"
+    stderr_print "Creating file =>" $BLUE$base_path/alacritty.yml
     touch $base_path/alacritty.yml
 fi
 
 if [ -d "$base_path/pycritty" ]; then
     warn "Pycritty is already installed, skipping..."
 else
-    echo "Cloning repository..."
-    git clone https://github.com/antoniosarosi/pycritty $base_path/pycritty
+    repo="https://github.com/antoniosarosi/pycritty"
+    color_print "Cloning repo =>" $CYAN$repo
+    git clone $repo  $base_path/pycritty
+    if (( $? != 0 )); then
+        error "Failed cloning repository, cannot install pycritty"
+    fi
 fi
 
 if [ -d $base_path/themes ]; then
     warn "Themes directory already exists, skipping..."
 else
-    echo "Creating themes directory..."
+    color_print "Creating themes dir =>" $BLUE$base_path/themes
     cp -r $base_path/pycritty/config/themes $base_path/themes
 fi
 
 if [ -f $base_path/fonts.yaml ]; then
     warn "fonts.yaml already exists, skipping..."
 else
-    echo "Creating fonts file..."
+    color_print "Creating fonts file =>" $BLUE$base_path/fonts.yaml
     cp $base_path/pycritty/config/fonts.yaml $base_path/fonts.yaml
 fi
 
 bin_dir=~/.local/bin
 if [ ! -d $bin_dir ]; then
-    warn "~/.local/bin does not exists, creating directory..."
+    warn "Local bin directory not found"
+    stderr_print "Creating dir =>" $BLUE$bin_dir
     mkdir -p $bin_dir
 fi
 
 if [ -f $bin_dir/pycritty ]; then
     warn "Executable already exists, skipping..."
 else
-    echo "Creating executable..."
+    color_print "Creating executable =>" $BLUE$bin_dir/pycritty
     ln -s $base_path/pycritty/src/main.py $bin_dir/pycritty
     chmod 755 $base_path/pycritty/src/main.py
 fi
@@ -127,7 +138,8 @@ declare -A fonts=(
 
 fonts_dir=~/.local/share/fonts
 if [ ! -d $fonts_dir ]; then
-    warn "Creating directory ~/.local/share/fonts"
+    warn "Local fonts directory not found"
+    stderr_print "Creating dir =>" $BLUE$fonts_dir
     mkdir -p $fonts_dir
 fi
 
@@ -135,9 +147,9 @@ echo "Installing fonts..."
 tmp_file=pycritty_nerd_fonts_tmp.zip
 for font in ${!fonts[@]}; do
     link=${fonts[${font}]}
-    echo -n "Downloading "; color_print $CYAN "$link"
+    color_print "Downloading =>" $CYAN$link
     curl -sL "$link" -o $fonts_dir/$tmp_file
-    echo -n "Installing font "; color_print $PURPLE "$font"
+    color_print "Installing font =>" $PURPLE$font
     unzip -qn $fonts_dir/$tmp_file -d $fonts_dir
 done
 
