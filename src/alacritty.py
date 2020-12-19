@@ -55,6 +55,7 @@ class Alacritty:
             'size': self.change_font_size,
             'opacity': self.change_opacity,
             'padding': self.change_padding,
+            'offset': self.change_font_offset,
             'list': self.list,
         }
 
@@ -68,7 +69,7 @@ class Alacritty:
                     errors_found += 1
 
         if errors_found > 0:
-            raise ConfigError(f'\n{errors_found} errors found')
+            raise ConfigError(f'\n{errors_found} error(s) found')
 
     def change_theme(self, name: str):
         themes_directory = self.base_path / 'themes'
@@ -183,6 +184,21 @@ class Alacritty:
         self.config['window']['padding']['x'] = x
         self.config['window']['padding']['y'] = y
         log.ok(f'Padding set to x: {x}, y: {y}')
+        
+    def change_font_offset(self, offset: List[int]):
+        if len(offset) != 2:
+            raise ConfigError('Wrong offset config, should be [x, y]')
+
+        x, y = offset
+        if 'font' not in self.config:
+            self.config['font'] = {}
+        if 'offset' not in self.config['font']:
+            log.warn('"offset" prop was not set')
+            self.config['font']['offset'] = {}
+        
+        self.config['font']['offset']['x'] = x
+        self.config['font']['offset']['y'] = y
+        log.ok(f'Offset set to x: {x}, y: {y}')
 
     def list(self, to_be_listed: str):
         def list_themes():
@@ -192,7 +208,7 @@ class Alacritty:
 
             themes = [file.name.split('.')[0] for file in themes_dir.iterdir()]
             if len(themes) < 1:
-                log.warn('Themes directory is empty, cannot list themes')
+                log.warn('Cannot list themes, themes directory is empty')
             else:
                 log.color_print('Themes:', log.Color.BOLD)
                 for theme in themes:
