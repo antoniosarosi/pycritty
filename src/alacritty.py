@@ -18,16 +18,34 @@ class Alacritty:
     def __init__(self):
         self.base_path = Path().home() / '.config' / 'alacritty'
         if not self.base_path.exists():
-            raise ConfigError('Alacritty directory not found')
+            raise ConfigError(f'Config directory not found: {self.base_path}')
 
         self.config_file = self.base_path / 'alacritty.yml'
-        if not self.config_file.exists():
-            raise ConfigError('Alacritty config file not found')
+        if not self.config_file.is_file():
+            log.warn('Config file not found')
+            self.config_file.touch()
+            print('Created config file =>', end=' ')
+            log.color_print(self.config_file, log.Color.BLUE)
 
         self.config = self._load(self.config_file)
         if self.config is None:
             self.config = {}
             log.warn('Alacritty config file was empty')
+
+        self.resources = {
+            'themes': {
+                'type': 'Themes directory',
+                'path': self.base_path / 'themes',
+                'exists': lambda: self.resources['themes']['path'].is_dir(),
+                'create': lambda: self.resources['themes']['path'].mkdir()
+            },
+            'fonts': {
+                'type': 'Fonts file',
+                'path': self.base_path / 'fonts.yaml',
+                'exists': lambda: self.resources['fonts']['path'].is_file(),
+                'create': lambda: self.resources['fonts']['path'].touch()
+            }
+        }
 
     def _load(self, yaml_file: Path) -> Dict[str, Any]:
         with open(yaml_file) as f:
@@ -40,6 +58,19 @@ class Alacritty:
                     'column {1.problem_mark.column}:\n'
                     '{1.problem} {1.context}'
                 ).format(yaml_file.name, e))
+
+    def _resource_path(self, resource: str) -> Path:
+        if resource not in self.resources:
+            raise ConfigError(f'Path for resource "{resource}" not set')
+
+        resource = self.resources[resource]
+        if not resource['exists']():
+            log.warn(f'{resource["type"]} not found')
+            resource['create']()
+            print('Created resource =>', end=' ')
+            log.color_print(resource['path'].absolute(), log.Color.BLUE)
+
+        return resource['path']
 
     def save(self):
         with open(self.config_file,  'w') as f:
@@ -71,14 +102,11 @@ class Alacritty:
         if errors_found > 0:
             raise ConfigError(f'\n{errors_found} error(s) found')
 
-    def change_theme(self, name: str):
-        themes_directory = self.base_path / 'themes'
-        if not themes_directory.exists():
-            raise ConfigError(f'Themes directory not found')
-
-        theme_file = themes_directory / f'{name}.yaml'
+    def change_theme(self, theme: str):
+        themes_directory = self._resource_path('themes')
+        theme_file = themes_directory / f'{theme}.yaml'
         if not theme_file.exists():
-            raise ConfigError(f'Theme {name} not found')
+            raise ConfigError(f'Theme {theme} not found')
 
         theme_yaml = self._load(theme_file)
         if theme_yaml is None:
@@ -105,14 +133,14 @@ class Alacritty:
 
         for k in expected_props:
             if k not in theme_yaml['colors']:
-                log.warn(f'Missing "colors:{k}" for theme "{name}"')
+                log.warn(f'Missing "colors:{k}" for theme "{theme}"')
                 continue
             for v in expected_props[k]:
                 if v not in theme_yaml['colors'][k]:
-                    log.warn(f'Missing "colors:{k}:{v}" for theme "{name}"')
+                    log.warn(f'Missing "colors:{k}:{v}" for theme "{theme}"')
 
         self.config['colors'] = theme_yaml['colors']
-        log.ok(f'Theme {name} applied')
+        log.ok(f'Theme {theme} applied')
 
     def change_font_size(self, size: float):
         if size <= 0:
@@ -129,9 +157,7 @@ class Alacritty:
             self.config['font'] = {}
             log.warn('"font" prop was not present in alacritty.yml')
 
-        fonts_file = self.base_path / 'fonts.yaml'
-        if not fonts_file.exists():
-            raise ConfigError('Fonts config file not found')
+        fonts_file = self._resource_path('fonts')
 
         fonts = self._load(fonts_file)
         if fonts is None:
@@ -202,10 +228,7 @@ class Alacritty:
 
     def list(self, to_be_listed: str):
         def list_themes():
-            themes_dir = self.base_path / 'themes'
-            if not themes_dir.is_dir():
-                raise ConfigError('Cannot list themes, directory not found')
-
+            themes_dir = self._resource_path('themes')
             themes = [file.name.split('.')[0] for file in themes_dir.iterdir()]
             if len(themes) < 1:
                 log.warn('Cannot list themes, themes directory is empty')
@@ -215,11 +238,7 @@ class Alacritty:
                     log.color_print(f'    {theme}', log.Color.BLUE)
 
         def list_fonts():
-            fonts_file = self.base_path / 'fonts.yaml'
-            if not fonts_file.is_file():
-                raise ConfigError('Cannot list fonts, fonts.yaml not found')
-
-            fonts = self._load(fonts_file)
+            fonts = self._load(self._resource_path('fonts'))
             if fonts is None or 'fonts' not in fonts:
                 log.warn('Cannot list fonts, no fonts found')
             else:
