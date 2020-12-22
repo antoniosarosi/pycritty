@@ -105,8 +105,8 @@ class Alacritty:
     def change_theme(self, theme: str):
         themes_directory = self._resource_path('themes')
         theme_file = themes_directory / f'{theme}.yaml'
-        if not theme_file.exists():
-            raise ConfigError(f'Theme {theme} not found')
+        if not theme_file.is_file():
+            raise ConfigError(f'Theme "{theme}" not found')
 
         theme_yaml = self._load(theme_file)
         if theme_yaml is None:
@@ -158,33 +158,33 @@ class Alacritty:
             log.warn('"font" prop was not present in alacritty.yml')
 
         fonts_file = self._resource_path('fonts')
-
         fonts = self._load(fonts_file)
         if fonts is None:
-            raise ConfigError(f'File {fonts_file.name} is empty')
+            raise ConfigError(f'File "{fonts_file}" is empty')
         if 'fonts' not in fonts:
-            raise ConfigError(f'No font config found in {fonts_file}')
+            raise ConfigError(f'No font config found in "{fonts_file}"')
 
-        if font not in fonts['fonts']:
+        fonts = fonts['fonts']
+        if font not in fonts:
             raise ConfigError(f'Config for font "{font}" not found')
 
         font_types = ['normal', 'bold', 'italic']
 
-        if isinstance(fonts['fonts'][font], str):
-            font_name = fonts['fonts'][font]
-            fonts['fonts'][font] = {}
+        if isinstance(fonts[font], str):
+            font_name = fonts[font]
+            fonts[font] = {}
             for t in font_types:
-                fonts['fonts'][font][t] = font_name
+                fonts[font][t] = font_name
 
-        if not isinstance(fonts['fonts'][font], Mapping):
-            raise ConfigError(f'Font {font} has wrong format')
+        if not isinstance(fonts[font], Mapping):
+            raise ConfigError(f'Font "{font}" has wrong format')
 
         for t in font_types:
-            if t not in fonts['fonts'][font]:
-                raise ConfigError(f'Font {font} does not have "{t}" property')
+            if t not in fonts[font]:
+                raise ConfigError(f'Font "{font}" does not have "{t}" property')
             if t not in self.config['font']:
                 self.config['font'][t] = {'family': 'tmp'}
-            self.config['font'][t]['family'] = fonts['fonts'][font][t]
+            self.config['font'][t]['family'] = fonts[font][t]
 
         log.ok(f'Font {font} applied')
 
