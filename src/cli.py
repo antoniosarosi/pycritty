@@ -20,12 +20,10 @@ def args() -> Dict[str, Any]:
     )
     parser.add_argument(
         '-t', '--theme',
-        metavar='"Theme name"',
         help='Change theme, choose from ~/.config/alacritty/themes'
     )
     parser.add_argument(
         '-f', '--font',
-        metavar='"Font alias"',
         help='Change font family, choose from ~/.config/alacritty/fonts.yaml'
     )
     parser.add_argument(
@@ -40,14 +38,14 @@ def args() -> Dict[str, Any]:
     )
     parser.add_argument(
         '-p', '--padding',
-        metavar=('x', 'y'),
+        metavar=('X', 'Y'),
         type=int,
         nargs=2,
         help='Change window padding X Y values'
     )
     parser.add_argument(
-        '--offset',
-        metavar=('x', 'y'),
+        '-O', '--offset',
+        metavar=('X', 'Y'),
         type=int,
         nargs=2,
         help='Change offset, X is space between chars and Y is line height'
@@ -58,6 +56,12 @@ def args() -> Dict[str, Any]:
         const='all',
         choices=['fonts', 'themes', 'all'],
         help='List all available options from resource, default is "all"'
+    )
+    parser.add_argument(
+        '-P', '--print',
+        nargs='*',
+        metavar='{config,fonts}',
+        help='Print the content of config files or themes by specifying their name',
     )
 
     return vars(parser.parse_args())
