@@ -88,6 +88,7 @@ class Alacritty:
             'padding': self.change_padding,
             'offset': self.change_font_offset,
             'list': self.list,
+            'print': self.print,
         }
 
         errors_found = 0
@@ -258,3 +259,37 @@ class Alacritty:
             if to_be_listed not in options:
                 raise ConfigError(f'Cannot list {to_be_listed}, unknown option')
             options[to_be_listed]()
+
+    def print(self, to_be_printed: List[str]):
+        def print_config():
+            log.color_print(self.config_file, log.Color.BOLD)
+            print(yaml.dump(self.config))
+
+        def print_fonts():
+            fonts_file = self._resource_path('fonts')
+            log.color_print(fonts_file, log.Color.BOLD)
+            print(yaml.dump(self._load(fonts_file)))
+
+        def print_theme(theme: str):
+            themes_dir = self._resource_path('themes')
+            theme_file = themes_dir / f'{theme}.yaml'
+            if not theme_file.is_file():
+                raise ConfigError(
+                    f'Failed printing "{theme}" theme, "{theme_file}" not found'
+                )
+            log.color_print(theme_file, log.Color.BOLD)
+            print(yaml.dump(self._load(theme_file)))
+
+        options = {
+            'fonts': print_fonts,
+            'config': print_config,
+        }
+
+        if len(to_be_printed) == 0:
+            to_be_printed.append('config')
+
+        for param in to_be_printed:
+            if param not in options:
+                print_theme(param)
+            else:
+                options[param]()
