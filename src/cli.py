@@ -60,7 +60,7 @@ def args() -> Dict[str, Any]:
     parser.add_argument(
         '-P', '--print',
         nargs='*',
-        metavar='{config,fonts}',
+        metavar=('config', 'fonts'),
         help='Print the content of config files or themes by specifying their name',
     )
 

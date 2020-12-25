@@ -5,6 +5,7 @@
 from typing import List, Dict, Any
 from collections.abc import Mapping
 from pathlib import Path
+from sys import stderr
 import yaml
 import log
 
@@ -24,8 +25,8 @@ class Alacritty:
         if not self.config_file.is_file():
             log.warn('Config file not found')
             self.config_file.touch()
-            print('Created config file =>', end=' ')
-            log.color_print(self.config_file, log.Color.BLUE)
+            print('Created config file =>', end=' ', file=stderr)
+            log.color_print(self.config_file, log.Color.BLUE, file=stderr)
 
         self.config = self._load(self.config_file)
         if self.config is None:
@@ -67,8 +68,8 @@ class Alacritty:
         if not resource['exists']():
             log.warn(f'{resource["type"]} not found')
             resource['create']()
-            print('Created resource =>', end=' ')
-            log.color_print(resource['path'].absolute(), log.Color.BLUE)
+            print('Created resource =>', end=' ', file=stderr)
+            log.color_print(resource['path'], log.Color.BLUE, file=stderr)
 
         return resource['path']
 
