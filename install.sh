@@ -111,6 +111,12 @@ if ! echo $PATH | grep $bin_dir &> /dev/null; then
     echo $new_path >> ~/.bashrc
 fi
 
+if ! pip freeze | grep --silent PyYAML; then
+    echo "Installing PyYAML module"
+    pip install PyYAML --quiet
+    ok "Python modules installed successfully"
+fi
+
 ok "Pycritty installed successfully. Open a new terminal to test it!"
 
 if [[ $1 != 'fonts' ]]; then
