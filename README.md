@@ -24,13 +24,16 @@ unless ```~/.config/alacritty/themes``` already exists.
 mkdir -p ~/.config/alacritty
 cd ~/.config/alacritty
 git clone https://github.com/antoniosarosi/pycritty
+
 # Create themes and fonts configs
 cp pycritty/config/fonts.yaml fonts.yaml
 cp -r pycritty/config/themes themes
+
 # Create executable
 mkdir -p ~/.local/bin
 ln -s ~/.config/alacritty/pycritty/src/main.py ~/.local/bin/pycritty
 chmod 755 pycritty/src/main.py
+
 # Add ~/.local/bin to $PATH
 echo 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
 ```
@@ -38,7 +41,9 @@ echo 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
 ## Usage:
 
 ```bash
+# Try this
 pycritty --font UbuntuMono --size 14 --opacity 0.95
+
 # Check all available options
 pycritty --help
 ```
