@@ -2,7 +2,7 @@ from typing import Dict, Any
 import argparse
 
 
-VERSION = 'v0.1.0'
+VERSION = 'v0.2.0'
 
 
 def args() -> Dict[str, Any]:
