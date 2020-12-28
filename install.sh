@@ -104,17 +104,20 @@ else
     chmod 755 $base_path/pycritty/src/main.py
 fi
 
-if ! echo $PATH | grep $bin_dir &> /dev/null; then
+if ! echo $PATH | grep -q $bin_dir; then
     warn '~/.local/bin not in $PATH'
     new_path='export PATH="$PATH:$HOME/.local/bin"'
     stderr_print "Creating new path =>$PURPLE echo $new_path >> ~/.bashrc"
     echo $new_path >> ~/.bashrc
 fi
 
-if ! pip freeze | grep --silent PyYAML; then
-    echo "Installing PyYAML module"
-    pip install PyYAML --quiet
-    ok "Python modules installed successfully"
+if ! program_exists "pip3"; then
+    warn "python3-pip is not installed, PyYaml module might be missing"
+elif ! pip3 freeze | grep -q PyYAML; then
+    color_print "Installing PyYAML module =>$PURPLE pip3 install PyYAML"
+    pip3 -q install PyYAML
+else
+    warn "PyYaml already installed, skipping..."
 fi
 
 ok "Pycritty installed successfully. Open a new terminal to test it!"

@@ -15,7 +15,9 @@ curl -sL "https://raw.githubusercontent.com/antoniosarosi/pycritty/master/instal
 
 If ```fonts``` param is present, the script will also install the fonts used
 as examples in ```config/fonts.yaml```. Themes will be installed by default,
-unless ```~/.config/alacritty/themes``` already exists.
+unless ```~/.config/alacritty/themes``` already exists. Before running the
+script make sure to have ```curl```, ```unzip``` and ```pip3``` installed on
+your system.
 
 ### Manual Installation
 
@@ -33,6 +35,8 @@ ln -s ~/.config/alacritty/pycritty/src/main.py ~/.local/bin/pycritty
 chmod 755 pycritty/src/main.py
 # Add ~/.local/bin to $PATH
 echo 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
+# Install dependencies
+pip3 install PyYAML
 ```
 
 ## Usage:
