@@ -2,41 +2,24 @@
 
 Change your alacritty config on the fly!
 
-![Preview Image](./preview.png)
+![Preview Image](https://raw.githubusercontent.com/antoniosarosi/pycritty/master/preview.png)
 
 ## Installation:
 
-### Install Script
-
 ```bash
-curl -sL "https://raw.githubusercontent.com/antoniosarosi/pycritty/master/install.sh" \
-| bash -s [fonts]
+pip install pycritty
 ```
 
-If ```fonts``` param is present, the script will also install the fonts used
-as examples in ```config/fonts.yaml```. Themes will be installed by default,
-unless ```~/.config/alacritty/themes``` already exists. Before running the
-script make sure to have ```curl```, ```unzip``` and ```pip3``` installed on
-your system.
-
-### Manual Installation
+By default, only the program itself will be installed, but you can install
+default themes from ```config/themes```:
 
 ```bash
-# Clone repo
-mkdir -p ~/.config/alacritty
-cd ~/.config/alacritty
-git clone https://github.com/antoniosarosi/pycritty
-# Create themes and fonts configs
-cp pycritty/config/fonts.yaml fonts.yaml
-cp -r pycritty/config/themes themes
-# Create executable
-mkdir -p ~/.local/bin
-ln -s ~/.config/alacritty/pycritty/src/main.py ~/.local/bin/pycritty
-chmod 755 pycritty/src/main.py
-# Add ~/.local/bin to $PATH
-echo 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
-# Install dependencies
-pip3 install PyYAML
+pip install --install-option="--themes=onedark,dracula,nord" pycritty
+```
+
+Or if you want them all:
+```bash
+pip install --install-option="--themes=all" pycritty
 ```
 
 ## Usage:
@@ -118,4 +101,29 @@ Then you can apply it using the name of the file:
 
 ```bash
 pycritty -t custom
+```
+
+## Custom scripts
+
+If you want to apply different configs programmatically, you can either use
+the cli in a shell script or use ```pycritty``` as a python module:
+
+```python
+# Dummy script that changes the theme every 10 minutes
+
+from time import sleep
+from pycritty.alacritty import Alacritty
+
+
+def main():
+    alacritty = Alacritty()
+    while True:
+        for theme in alacritty.list('themes'):
+            alacritty.change_theme(theme)  # or alacritty.apply(theme=theme)
+            alacritty.save()
+            sleep(600)
+
+
+if __name__ == '__main__':
+    main()
 ```

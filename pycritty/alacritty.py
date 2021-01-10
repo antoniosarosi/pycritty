@@ -2,7 +2,7 @@
 # Antonio Sarosi
 # December 10, 2020
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 from collections.abc import Mapping
 from pathlib import Path
 from sys import stderr
@@ -228,8 +228,8 @@ class Alacritty:
         self.config['font']['offset']['y'] = y
         log.ok(f'Offset set to x: {x}, y: {y}')
 
-    def list(self, to_be_listed: str):
-        def list_themes():
+    def list(self, to_be_listed: str) -> Union[List[str], Dict[str, List[str]]]:
+        def list_themes() -> List[str]:
             themes_dir = self._resource_path('themes')
             themes = [file.name.split('.')[0] for file in themes_dir.iterdir()]
             if len(themes) < 1:
@@ -238,6 +238,8 @@ class Alacritty:
                 log.color_print('Themes:', log.Color.BOLD)
                 for theme in themes:
                     log.color_print(f'    {theme}', log.Color.BLUE)
+
+            return themes
 
         def list_fonts():
             fonts = self._load(self._resource_path('fonts'))
@@ -248,18 +250,22 @@ class Alacritty:
                 for font in fonts['fonts']:
                     log.color_print(f'    {font}', log.Color.PURPLE)
 
+            return list(fonts['fonts']) 
+
         options = {
             'themes': list_themes,
             'fonts': list_fonts,
         }
 
         if to_be_listed == 'all':
-            for _, list_function in options.items():
-                list_function()
+            lists: Dict[str, List[str]] = {}
+            for opt, list_function in options.items():
+                lists[opt] = list_function()
+            return lists
         else:
             if to_be_listed not in options:
                 raise ConfigError(f'Cannot list {to_be_listed}, unknown option')
-            options[to_be_listed]()
+            return options[to_be_listed]()
 
     def print(self, to_be_printed: List[str]):
         def print_config():
