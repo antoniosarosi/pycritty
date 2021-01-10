@@ -31,8 +31,10 @@ class PostInstallHook(install):
             
         theme_files = list((config_path / 'themes').iterdir())
         self.exclude = set(theme_files)
-        if self.themes is not None and 'all' not in self.themes:
+        if self.themes is not None:
             include = set(self.themes.replace(' ', '').split(','))
+            if 'all' in include:
+                include = set([f.name.split('.')[0] for f in theme_files])
             for f in theme_files:
                 if f.name.split('.')[0] in include:
                     self.exclude.remove(f)

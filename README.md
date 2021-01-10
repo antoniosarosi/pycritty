@@ -11,7 +11,7 @@ pip install pycritty
 ```
 
 By default, only the program itself will be installed, but you can install
-default themes from ```config/themes```:
+default themes from [```config/themes```](https://github.com/antoniosarosi/pycritty/tree/master/config):
 
 ```bash
 pip install --install-option="--themes=onedark,dracula,nord" pycritty
