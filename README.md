@@ -2,7 +2,7 @@
 
 Change your alacritty config on the fly!
 
-![Preview](img/preview.png)
+![Preview Image](./preview.png)
 
 ## Installation:
 

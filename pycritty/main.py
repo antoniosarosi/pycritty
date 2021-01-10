@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-
 # Pycritty
 # Antonio Sarosi
 # December 9, 2020
 
-from alacritty import Alacritty, ConfigError
-from cli import args
-import log
+from .alacritty import Alacritty, ConfigError
+from .cli import args
+from . import log
 
 
 def main():

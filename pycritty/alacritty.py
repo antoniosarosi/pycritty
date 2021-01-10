@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from sys import stderr
 import yaml
-import log
+from . import log
 
 
 class ConfigError(Exception):

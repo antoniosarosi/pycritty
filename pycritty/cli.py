@@ -1,8 +1,6 @@
 from typing import Dict, Any
 import argparse
-
-
-VERSION = 'v0.2.0'
+from . import __version__
 
 
 def args() -> Dict[str, Any]:
@@ -16,7 +14,7 @@ def args() -> Dict[str, Any]:
     parser.add_argument(
         '-v', '--version',
         action='version',
-        version=VERSION
+        version=__version__
     )
     parser.add_argument(
         '-t', '--theme',

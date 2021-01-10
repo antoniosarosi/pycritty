@@ -1,3 +1,5 @@
+# Example font config file. If you have these fonts installed you can apply them
+
 fonts:
     UbuntuMono: UbuntuMono Nerd Font
     Mononoki: mononoki Nerd Font
