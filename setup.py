@@ -2,6 +2,7 @@ import setuptools
 from setuptools.command.install import install
 from pathlib import Path
 from pycritty import __version__
+from pycritty.resources import base_dir, config_file
 
 
 class PostInstallHook(install):
@@ -21,24 +22,24 @@ class PostInstallHook(install):
         self.hook()
 
     def hook(self):
-        config_path = Path(__file__).parent / 'config'
-        alacirtty_path = Path().home() / '.config' / 'alacritty'
-        if not alacirtty_path.is_dir():
-            alacirtty_path.mkdir(parents=True)
-        config_file = alacirtty_path / 'alacritty.yml'
-        if not config_file.is_file():
-            config_file.touch()
-            
-        theme_files = list((config_path / 'themes').iterdir())
+        installation_resources = Path(__file__).parent / 'config'
+        base_dir.create()
+        config_file.create()
+
+        theme_files = list((installation_resources / 'themes').iterdir())
+        # Don't install any theme by default
         self.exclude = set(theme_files)
+
         if self.themes is not None:
+            # Parse options
             include = set(self.themes.replace(' ', '').split(','))
             if 'all' in include:
-                include = set([f.name.split('.')[0] for f in theme_files])
+                include = set([f.stem for f in theme_files])
             for f in theme_files:
-                if f.name.split('.')[0] in include:
+                if f.stem in include:
                     self.exclude.remove(f)
-        self.cp(config_path, alacirtty_path)
+
+        self.cp(installation_resources, base_dir.path)
 
     def cp(self, src_dir: Path, dest_dir: Path):
         for src_child in src_dir.iterdir():
@@ -46,14 +47,12 @@ class PostInstallHook(install):
                 continue
             dest_child = dest_dir / src_child.name
             if src_child.is_dir():
-                if not dest_child.is_dir():
-                    dest_child.mkdir()
+                dest_child.mkdir(exist_ok=True)
                 self.cp(src_child, dest_child)
-            else:
-                if not dest_child.is_file():
-                    dest_child.touch()
-                    with open(src_child, 'r') as s, open(dest_child, 'w') as d:
-                        d.write(s.read())
+            elif not dest_child.is_file():
+                dest_child.touch()
+                with open(src_child, 'r') as s, open(dest_child, 'w') as d:
+                    d.write(s.read())
 
 
 with open("README.md", "r", encoding="utf-8") as f:
