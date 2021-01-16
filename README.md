@@ -24,10 +24,33 @@ pip install --install-option="--themes=all" pycritty
 
 ## Usage:
 
+Change your current config:
+
 ```bash
-pycritty --font UbuntuMono --size 14 --opacity 0.95
-# Check all available options
-pycritty --help
+pycritty set --font UbuntuMono --size 14 --opacity 0.95
+```
+
+Save multiple configs and reuse them later:
+
+```bash
+pycritty save MyConfig
+# 3 bugs later ...
+pycritty load MyConfig
+```
+
+Install themes and configs from URLs:
+```bash
+pycritty install -t https://raw.githubusercontent.com/antoniosarosi/pycritty/master/config/themes/breeze.yaml
+pycritty set -t breeze
+pycritty install -c -n SomeCoolConfig https://raw.githubusercontent.com/antoniosarosi/dotfiles/master/.config/alacritty/config.yaml
+pycritty load SomeCoolConfig
+```
+
+Check help for all available options:
+```bash
+pycritty -h
+# pycritty subcomand -h
+pycritty set -h
 ```
 
 ## Fonts Config
@@ -38,7 +61,7 @@ fonts:
     Alias: Font Name
 ```
 
-When applied using ```pycritty -f Alias```, the previous format will be
+When applied using ```pycritty set -f Alias```, the previous format will be
 converted into the alacritty equivalent:
 
 ```yaml
@@ -100,7 +123,7 @@ colors:
 Then you can apply it using the name of the file:
 
 ```bash
-pycritty -t custom
+pycritty set -t custom
 ```
 
 ## Custom scripts
@@ -112,15 +135,16 @@ the cli in a shell script or use ```pycritty``` as a python module:
 # Dummy script that changes the theme every 10 minutes
 
 from time import sleep
-from pycritty.alacritty import Alacritty
+from pycritty.commands import ListResource, SetConfig
 
 
 def main():
-    alacritty = Alacritty()
+    ls = ListResource()
+    conf = SetConfig()
     while True:
-        for theme in alacritty.list('themes'):
-            alacritty.change_theme(theme)  # or alacritty.apply(theme=theme)
-            alacritty.save()
+        for theme in ls.list_themes():
+            conf.change_theme(theme)  # or conf.set(theme=theme)
+            conf.apply()
             sleep(600)
 
 
