@@ -32,7 +32,7 @@ def read_yaml(url: Union[str, Path, Resource]) -> Dict[str, Any]:
         has_protocol = urlparse(url).scheme != ''
     if isinstance(url, Resource):
         url = url.path
-    if not has_protocol or isinstance(url, Path) or isinstance(url, Resource):
+    if not has_protocol or isinstance(url, Path):
         open_function = open
     else:
         open_function = urlopen

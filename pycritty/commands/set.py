@@ -29,9 +29,6 @@ class SetConfig(Command):
     def apply(self):
         yio.write_yaml(self.config, resources.config_file)
 
-    def execute(self, actions: Dict[str, Any]):
-        super().execute(actions)
-
     def set(self, **kwargs):
         """Set multiple changes at once
 
