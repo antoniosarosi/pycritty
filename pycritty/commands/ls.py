@@ -49,8 +49,12 @@ class ListResource(Command):
     def print_list(self, option: str):
         header, color, get_list = self.options[option]
         log.color_print(f'{header}:', default_color=log.Color.BOLD)
-        for item in get_list():
-            log.color_print(f'    {item}', default_color=color)
+        ls = get_list()
+        if len(ls) < 1:
+            log.color_print(log.Color.ITALIC, log.Color.YELLOW, '    Empty directory')
+        else:
+            for item in get_list():
+                log.color_print(f'    {item}', default_color=color)
 
     def list_resource(self, to_be_listed: List[str]):
         if 'all' in to_be_listed:

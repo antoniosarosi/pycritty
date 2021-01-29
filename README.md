@@ -27,21 +27,20 @@ pip install --install-option="--themes=all" pycritty
 Change your current config:
 
 ```bash
-pycritty set --font UbuntuMono --size 14 --opacity 0.95
+pycritty --font UbuntuMono --size 14 --opacity 0.95
 ```
 
 Save multiple configs and reuse them later:
 
 ```bash
-pycritty save MyConfig
-# 3 bugs later ...
-pycritty load MyConfig
+pycritty save ThisConfig
+pycritty load AnotherConfig
 ```
 
 Install themes and configs from URLs:
 ```bash
 pycritty install -t https://raw.githubusercontent.com/antoniosarosi/pycritty/master/config/themes/breeze.yaml
-pycritty set -t breeze
+pycritty -t breeze
 pycritty install -c -n SomeCoolConfig https://raw.githubusercontent.com/antoniosarosi/dotfiles/master/.config/alacritty/config.yaml
 pycritty load SomeCoolConfig
 ```
@@ -50,7 +49,7 @@ Check help for all available options:
 ```bash
 pycritty -h
 # pycritty subcomand -h
-pycritty set -h
+pycritty save -h
 ```
 
 ## Fonts Config
@@ -61,7 +60,7 @@ fonts:
     Alias: Font Name
 ```
 
-When applied using ```pycritty set -f Alias```, the previous format will be
+When applied using ```pycritty -f Alias```, the previous format will be
 converted into the alacritty equivalent:
 
 ```yaml
@@ -123,13 +122,13 @@ colors:
 Then you can apply it using the name of the file:
 
 ```bash
-pycritty set -t custom
+pycritty -t custom
 ```
 
 ## Custom scripts
 
 If you want to apply different configs programmatically, you can either use
-the cli in a shell script or use ```pycritty``` as a python module:
+the CLI in a shell script or use ```pycritty``` as a python module:
 
 ```python
 # Dummy script that changes the theme every 10 minutes

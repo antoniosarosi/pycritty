@@ -4,27 +4,31 @@
 
 from . import PycrittyError
 from .io import log
-from .commands import subcommands
+from .commands import subcommands, SetConfig
 from .cli import parser
+
+
+def error(msg: str):
+    log.err(msg)
+    exit(1)
 
 
 def main():
     args = vars(parser.parse_args())
     if args['subcommand'] is None:
+        command_receiver = SetConfig
+    else:
+        command_receiver = subcommands[args['subcommand']]
+    args.pop('subcommand')
+    if len(args) == 0:
         parser.print_help()
         exit(0)
-
-    subcommand = subcommands[args['subcommand']]
-    args.pop('subcommand')
-    if subcommand.requires_args and len(args) < 1:
-        log.warn('Missing arguments, use -h for help')
-        exit(1)
-
+    if command_receiver.requires_args and len(args) < 1:
+        error('Missing arguments, use -h for help')
     try:
-        subcommand().execute(args)
+        command_receiver().execute(args)
     except PycrittyError as e:
-        log.err(e)
-        exit(1)
+        error(e)
 
 
 if __name__ == '__main__':

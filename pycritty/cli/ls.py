@@ -3,7 +3,7 @@ from .pycritty import subparsers, formatter
 
 
 list_parser = subparsers.add_parser(
-    'list',
+    'ls',
     help='List available resources',
     formatter_class=formatter(),
     argument_default=argparse.SUPPRESS,

@@ -44,22 +44,17 @@ def color_print(
     if print_colors:
         string.append(str(default_color))
 
-    messages_iter = iter(messages)
-    # Print first message and deal with 'sep' later
-    first = next(messages_iter)
-    is_color = isinstance(first, Color)
-    if is_color and print_colors or not is_color:
-        string.append(str(first))
+    for i in range(len(messages) - 1):
+        # Print separators only after strings
+        is_color = isinstance(messages[i], Color)
+        if not is_color or print_colors:
+            string.append(str(messages[i]))
+        if not is_color:
+            string.append(sep)
 
-    # Print sep only when message is a string
-    for m in messages_iter:
-        is_color = isinstance(m, Color)
-        if is_color and print_colors:
-            string.append(str(m))
-        elif not is_color:
-            string.append(f'{sep}{m}')
-
-    # Back to normal
+    # Last message being a color makes no sense
+    if not isinstance(messages[-1], Color):
+        string.append(str(messages[-1]))
     if print_colors:
         string.append(str(Color.NORMAL))
 

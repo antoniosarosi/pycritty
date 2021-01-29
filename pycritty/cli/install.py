@@ -11,7 +11,6 @@ install_parser = subparsers.add_parser(
 
 install_parser.add_argument(
     'url',
-    metavar='URL',
     help='URL where the config is located',
 )
 
@@ -40,7 +39,6 @@ group.add_argument(
 
 group.add_argument(
     '-c', '--config',
-    dest='config',
     action='store_true',
-    help='Install as config, you can load it with pycritty load',
+    help='Install as a config file in your saves directory (default)',
 )
