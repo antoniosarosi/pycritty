@@ -33,17 +33,10 @@ class Install(Command):
         self.save.save_config(config_name, url, dest_parent, override)
 
     def execute(self, actions: Dict[str, Any]):
-        if 'url' not in actions:
-            return
-
         url = actions['url']
         name = actions['name']
         if name is None or len(name) == 0:
             name = Path(urlparse(url).path).stem
-
-        override = 'override_config' in actions
-        dest_parent = saves_dir
-        if 'theme' in actions:
-            dest_parent = themes_dir
-
+        override = 'override' in actions
+        dest_parent = themes_dir if 'theme' in actions else saves_dir
         self.install(name, url, dest_parent, override)

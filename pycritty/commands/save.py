@@ -8,8 +8,6 @@ from ..resources.resource import ConfigFile
 
 
 class SaveConfig(Command):
-    requires_args = True
-
     def save_config(
         self,
         config_name: str,
@@ -32,12 +30,6 @@ class SaveConfig(Command):
             log.ok('Config saved =>', log.Color.BLUE, dest_file)
 
     def execute(self, actions: Dict[str, Any]):
-        if 'save_config' not in actions:
-            return
-
-        # Override config is a flag separated from the other parameters,
-        # in this cases it has to be treated manually
-        self.save_config(
-            config_name=actions['save_config'],
-            override='override_config' in actions
-        )
+        config_name = actions['name']
+        override = 'override' in actions
+        self.save_config(config_name, override=override)

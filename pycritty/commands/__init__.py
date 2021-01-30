@@ -1,4 +1,4 @@
-from .pycritty import SetConfig
+from .pycritty import Pycritty
 from .ls import ListResource
 from .save import SaveConfig
 from .load import LoadConfig

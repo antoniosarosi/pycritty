@@ -1,3 +1,4 @@
+from typing import Dict, Any
 from .command import Command
 from .. import PycrittyError
 from ..io import log, yio
@@ -17,3 +18,6 @@ class LoadConfig(Command):
             yio.write_yaml(conf, config_file)
 
         log.ok(f'Config "{config_name}" applied')
+
+    def execute(self, actions: Dict[str, Any]):
+        self.load_config(actions['load_config'])

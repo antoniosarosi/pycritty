@@ -20,8 +20,7 @@ class Remove(Command):
                 file.path.unlink()
 
     def execute(self, actions: Dict[str, Any]):
-        if 'configs' not in actions:
-            return
+        configs = actions['configs']
         force = 'force' in actions
         config_parent = themes_dir if 'theme' in actions else saves_dir
-        self.remove(actions['configs'], config_parent, force)
+        self.remove(configs, config_parent, force)

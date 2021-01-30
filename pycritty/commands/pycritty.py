@@ -10,16 +10,14 @@ class ConfigError(PycrittyError):
         super().__init__(message)
 
 
-class SetConfig(Command):
+class Pycritty(Command):
     """Applies changes to the config
 
-    >>> conf = SetConfig()
+    >>> conf = Pycritty()
     >>> conf.change_theme('dracula')
     >>> conf.change_font('UbuntuMono')
     >>> conf.apply()
     """
-
-    requires_args = True
 
     def __init__(self):
         self.config = yio.read_yaml(resources.config_file.get_or_create())
@@ -28,6 +26,25 @@ class SetConfig(Command):
 
     def apply(self):
         yio.write_yaml(self.config, resources.config_file)
+    
+    def execute(self, actions: Dict[str, Any]):
+        if len(actions) < 1:
+            log.warn('Nothing to do, use -h for help')
+            return
+
+        errors = 0
+        for method, args in actions.items():
+            call = getattr(self, method)
+            try:
+                call(args)
+            except PycrittyError as e:
+                log.err(e)
+                errors += 1
+
+        self.apply()
+
+        if errors > 0:
+            raise PycrittyError(f'\n{errors} error(s) found')
 
     def set(self, **kwargs):
         """Set multiple changes at once

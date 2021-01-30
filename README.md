@@ -131,22 +131,38 @@ If you want to apply different configs programmatically, you can either use
 the CLI in a shell script or use ```pycritty``` as a python module:
 
 ```python
-# Dummy script that changes the theme every 10 minutes
+#!/bin/python3
+
+# Dummy script that changes the theme every 5 minutes
 
 from time import sleep
-from pycritty.commands import ListResource, SetConfig
+from pycritty.commands import Pycritty, ListResource
 
 
 def main():
     ls = ListResource()
-    conf = SetConfig()
+    conf = Pycritty()
     while True:
         for theme in ls.list_themes():
             conf.change_theme(theme)  # or conf.set(theme=theme)
             conf.apply()
-            sleep(600)
+            sleep(300)
 
 
 if __name__ == '__main__':
     main()
+```
+
+Shell equivalent:
+
+```bash
+#!/bin/bash
+
+while :; do
+    # Same as pycritty ls --themes --iterable
+    for theme in $(pycritty ls -ti); do
+        pycritty -t $theme
+        sleep 300
+    done
+done
 ```

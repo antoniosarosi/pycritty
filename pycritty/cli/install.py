@@ -23,7 +23,6 @@ install_parser.add_argument(
 
 install_parser.add_argument(
     '-o', '--override',
-    dest='override_config',
     action='store_true',
     help='Override existing config',
 )
@@ -32,7 +31,6 @@ group = install_parser.add_mutually_exclusive_group()
 
 group.add_argument(
     '-t', '--theme',
-    dest='theme',
     action='store_true',
     help='Install as theme',
 )

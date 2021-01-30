@@ -10,14 +10,13 @@ save_parser = subparsers.add_parser(
 )
 
 save_parser.add_argument(
-    'save_config',
+    'name',
     metavar='NAME',
     help='Name of the config being saved',
 )
 
 save_parser.add_argument(
     '-o', '--override',
-    dest='override_config',
     action='store_true',
     help='Override existing config',
 )
