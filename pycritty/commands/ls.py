@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 from .command import Command
 from .. import PycrittyError
 from ..resources import fonts_file, themes_dir, saves_dir
@@ -12,7 +12,7 @@ class ListResource(Command):
         self.options = {
             'themes': ('Themes', log.Color.BLUE, self.list_themes),
             'fonts': ('Fonts', log.Color.PURPLE, self.list_fonts),
-            'saves': ('Saves', log.Color.CYAN, self.list_saves),
+            'configs': ('Configs', log.Color.CYAN, self.list_saves),
         }
 
     def _list_dir(self, directory: Resource):
@@ -46,30 +46,28 @@ class ListResource(Command):
 
         return fonts
 
-    def print_list(self, option: str):
+    def print_list(self, option: str, iterable=True):
         header, color, get_list = self.options[option]
-        log.color_print(f'{header}:', default_color=log.Color.BOLD)
+        if not iterable:
+            log.color_print(f'{header}:', default_color=log.Color.BOLD)
         ls = get_list()
-        if len(ls) < 1:
-            log.color_print(log.Color.ITALIC, log.Color.YELLOW, '    Empty directory')
+        tabs = '    ' if not iterable else ''
+        if len(ls) < 1 and not iterable:
+            log.color_print(log.Color.ITALIC, log.Color.YELLOW, f'{tabs}Empty directory')
         else:
-            for item in get_list():
-                log.color_print(f'    {item}', default_color=color)
-
-    def list_resource(self, to_be_listed: List[str]):
-        if 'all' in to_be_listed:
+            for item in ls:
+                log.color_print(f'{tabs}{item}', default_color=color)
+            
+    def execute(self, args: Dict[str, Any]):
+        if len(args) < 1:
+            args['all'] = True
+        iterable = False
+        if 'iterable' in args:
+            iterable = True
+            args.pop('iterable')
+        if 'all' in args:
             for opt in self.options:
-                self.print_list(opt)
-            return
-
-        incorrenct_options = []
-        for opt in to_be_listed:
-            if opt not in self.options:
-                incorrenct_options.append(opt)
-            else:
-                self.print_list(opt)
-
-        if len(incorrenct_options) > 0:
-            raise PycrittyError(
-                f'Failed listing "{",".join(incorrenct_options)}" (unknown options)'
-            )
+                args[opt] = True
+            args.pop('all')
+        for opt in args:
+            self.print_list(opt, iterable)

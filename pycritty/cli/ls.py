@@ -10,9 +10,31 @@ list_parser = subparsers.add_parser(
 )
 
 list_parser.add_argument(
-    'list_resource',
-    nargs='*',
-    default='all',
-    choices=['fonts', 'themes', 'saves', 'all'],
-    help='List all available options from a resource, default is "all"',
+    '-t', '--themes',
+    action='store_true',
+    help='List themes',
+)
+
+list_parser.add_argument(
+    '-f', '--fonts',
+    action='store_true',
+    help='List fonts',
+)
+
+list_parser.add_argument(
+    '-c', '--configs',
+    action='store_true',
+    help='List saved configs',
+)
+
+list_parser.add_argument(
+    '-a', '--all',
+    action='store_true',
+    help='List all (default)',
+)
+
+list_parser.add_argument(
+    '-i', '--iterable',
+    action='store_true',
+    help='Output list in iterable format (for scripts)',
 )
