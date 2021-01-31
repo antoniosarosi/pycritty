@@ -17,7 +17,9 @@ def main():
     args.pop('subcommand')
     try:
         command_receiver().execute(args)
-    except PycrittyError as e:
+    except (PycrittyError, KeyboardInterrupt) as e:
+        if isinstance(e, KeyboardInterrupt):
+            e = 'Interrupted, changes might not have been applied'
         log.err(e)
         exit(1)
 

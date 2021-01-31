@@ -42,13 +42,15 @@ def read_yaml(url: Union[str, Path, Resource]) -> Dict[str, Any]:
             return yaml.load(f, Loader=yaml.FullLoader)
     except (IOError, URLError) as e:
         raise YamlIOError(f'Error trying to access "{url}":\n{e}')
+    except (UnicodeDecodeError, yaml.reader.ReaderError) as e:
+        raise YamlParseError(f'Failed decoding "{url}":\n{e}')
     except yaml.YAMLError as e:
         raise YamlParseError((
-            'YAML error at "{0}", '
-            'at line {1.problem_mark.line}, '
-            'column {1.problem_mark.column}:\n'
-            '{1.problem} {1.context}'
-        ).format(url, e))
+            f'YAML error at "{url}", '
+            f'at line {e.problem_mark.line}, '
+            f'column {e.problem_mark.column}:\n'
+            f'{e.problem} {e.context or ""}'
+        ))
 
 
 def write_yaml(y: Dict[str, Any], file: Union[Path, Resource]):
