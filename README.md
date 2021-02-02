@@ -22,6 +22,14 @@ Or if you want them all:
 pip install --install-option="--themes=all" pycritty
 ```
 
+Make sure to have ```~/.local/bin``` directory in your ```$PATH```, otherwise
+your shell won't find the ```pycritty``` command. Add this line to your
+```~/.xprofile``` if you haven't already:
+
+```bash
+export PATH=$HOME/.local/bin:$PATH
+```
+
 ## Usage:
 
 Change your current config:

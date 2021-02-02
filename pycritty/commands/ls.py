@@ -70,4 +70,5 @@ class ListResource(Command):
                 args[opt] = True
             args.pop('all')
         for opt in args:
-            self.print_list(opt, iterable)
+            if opt in self.options:
+                self.print_list(opt, iterable)

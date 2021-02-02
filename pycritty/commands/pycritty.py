@@ -34,10 +34,10 @@ class Pycritty(Command):
 
         errors = 0
         for method, args in actions.items():
-            call = getattr(self, method)
             try:
+                call = getattr(self, method)
                 call(args)
-            except PycrittyError as e:
+            except (PycrittyError, AttributeError) as e:
                 log.err(e)
                 errors += 1
 
