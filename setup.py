@@ -76,7 +76,7 @@ setuptools.setup(
     ],
     keywords="alacritty",
     python_requires='>=3.6',
-    install_requires=["PyYAML"],
+    install_requires=["PyYAML", "click"],
     include_package_data=True,
     cmdclass={
         'install': PostInstallHook,

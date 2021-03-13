@@ -140,3 +140,4 @@ cython_debug/
 # IDEs
 .idea
 .vscode
+.vim
