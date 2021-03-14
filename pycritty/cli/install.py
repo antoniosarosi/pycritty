@@ -21,6 +21,7 @@ class ValidURL(click.ParamType):
 @click.option('-o', '--override', help='Override existing config')
 @click.option('-t', '--theme', 'is_theme', is_flag=True, help='Install as theme instead of config file')
 def install(url, name='', override=False, is_theme=False):
+    """Install a config file from the Internet right into your saves folder"""
     opts = dict(url=url, name=name, override=override)
     if is_theme:
         opts['theme'] = True
