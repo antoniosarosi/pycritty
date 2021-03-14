@@ -35,7 +35,9 @@ def pycritty_cli(**options):
 
 @pycritty_cli.resultcallback()
 def pycritty_cli_cb(rest, **options):
-    print(rest)
+
+    for action, opts in rest:
+        action().execute(opts)
 
 
     # apply my options
