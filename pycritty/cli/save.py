@@ -1,25 +1,12 @@
-import argparse
-from .pycritty import subparsers, formatter
+from .pycritty import pycritty_cli
+from ..commands.save import SaveConfig
+import click
 
 
+@pycritty_cli.command('save')
+@click.argument('name')
+@click.option('-o', '--override', is_flag=True, help='Override existing config')
+def save(name, override=False):
+    actions = {'name': name, 'override': override}
 
-
-
-save_parser = subparsers.add_parser(
-    'save',
-    formatter_class=formatter(),
-    help="Save the current config to reuse it later",
-    argument_default=argparse.SUPPRESS,
-)
-
-save_parser.add_argument(
-    'name',
-    metavar='NAME',
-    help='Name of the config being saved',
-)
-
-save_parser.add_argument(
-    '-o', '--override',
-    action='store_true',
-    help='Override existing config',
-)
+    return SaveConfig, actions

@@ -1,4 +1,4 @@
-from .. import __version__
+from .. import __version__, PycrittyError
 from ..commands.pycritty import Pycritty
 import click
 
@@ -20,8 +20,8 @@ class XYFloatPair(click.ParamType):
             self.fail('Expected two floats in the form X:Y')
 
 
-@click.group(chain=True, invoke_without_command=True)
-@click.option('theme', '-t', '--theme', help='Change theme, choose from ~/.config/alacritty/themes')
+@click.group(invoke_without_command=True)
+@click.option('-t', '--theme', help='Change theme, choose from ~/.config/alacritty/themes')
 @click.option('-f', '--font', help='Change font family, from ~/.config/alacritty/fonts.yaml')
 @click.option('-p', '--padding', help='Change window padding X Y values', type=XYFloatPair())
 @click.option('-o', '--opacity', help='Change window opacity', type=click.FloatRange(0, 1))
@@ -35,13 +35,13 @@ def pycritty_cli(**options):
 
 @pycritty_cli.resultcallback()
 def pycritty_cli_cb(rest, **options):
+    opts = {k: v for k, v in options.items() if v is not None}
 
-    for action, opts in rest:
-        action().execute(opts)
-
+    if rest is not None and opts:
+        raise PycrittyError(
+            "Ambiguous command: Can't know if you want to apply settings first or do the command first!")
 
     # apply my options
-    opts = {k: v for k, v in options.items() if v is not None}
     conf = Pycritty()
 
     conf.set(**opts)
