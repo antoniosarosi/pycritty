@@ -41,6 +41,12 @@ def pycritty_cli_cb(rest, **options):
         raise PycrittyError(
             "Ambiguous command: Can't know if you want to apply settings first or do the command first!")
 
+
+    if rest is not None:
+        action, options = rest
+        action().execute(options)
+        return
+
     # apply my options
     conf = Pycritty()
 
