@@ -47,7 +47,7 @@ def pycritty_cli_cb(rest, **options):
         action().execute(options)
         return
 
-    # apply my options
+    # apply normal options
     conf = Pycritty()
 
     conf.set(**opts)
