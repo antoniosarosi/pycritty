@@ -10,7 +10,7 @@ load_parser = subparsers.add_parser(
 )
 
 load_parser.add_argument(
-    'load_config',
+    'name',
     metavar='NAME',
     help='Name of the config you want to load',
 )

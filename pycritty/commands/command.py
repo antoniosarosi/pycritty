@@ -1,18 +1,26 @@
-from typing import Dict, Any
-from abc import ABCMeta, abstractmethod
+from typing import Dict, Callable, Any
+from .. import PycrittyError
 
 
-class Command(metaclass=ABCMeta):
-    """Objects representing a CLI command"""
+class Pycritty:
+    def __init__(self):
+        self.commands: Dict[str, Callable[[Any, ...], None]] = {}
 
-    @abstractmethod
-    def execute(self, actions: Dict[str, Any]):
-        """Actions are key value pairs parsed from sys.argv with argparse.
-        For example, the command that sets configs might receive this:
-        >>> {'set_theme': 'onedark', 'set_font': 'UbuntuMono'}
-        The command that installs configs might receive something like this:
-        >>> {'url': 'https://example.io./conf.yml', 'override': True, 'name': 'Foo'}
-        These key value pairs have to be interpreted as arguments or callable
-        functions, depending on the command.
-        """
-        pass
+    def command(self, name: str) -> Callable[Callable[[Any, ...], None], None]:
+        def register(callback):
+            self.commands[name] = callback
+            return callback
+
+        return register
+
+    def execute(self, command: str, args: Dict[str, Any]):
+        if command is None:
+            command = 'pycritty'
+        if command not in self.commands:
+            raise PycrittyError(f'Unkown command {command}')
+
+        command = self.commands[command]
+        command(**args)
+
+
+pycritty = Pycritty()

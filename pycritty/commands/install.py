@@ -1,42 +1,32 @@
 from typing import Dict, Any, Union
 from urllib.parse import urlparse
 from pathlib import Path
-from .command import Command
-from .save import SaveConfig
 from ..resources import saves_dir, themes_dir
 from ..resources.resource import Resource
+from .save import save_config
+from .command import pycritty
 
 
-class Install(Command):
-    def __init__(self):
-        self.save = SaveConfig()
+@pycritty.command('install')
+def install(
+    config_name: str = None,
+    url: Union[str, Path, Resource] = None,
+    as_theme=False,
+    override=False
+):
+    """Download config from a URL
 
-    def install(
-        self,
-        config_name: str,
-        url: Union[str, Path, Resource],
-        dest_parent=saves_dir,
-        override=False
-    ):
-        """Download config from a URL
+    >>> from pycritty.resources import themes_dir
+    >>> installer = Install()
+    >>> installer.install(
+    ...     config_name='example',
+    ...     url='https://example.com/config.yaml',
+    ...     dest_parent=themes_dir,
+    ...     override=True,
+    ... )
+    """
 
-        >>> from pycritty.resources import themes_dir
-        >>> installer = Install()
-        >>> installer.install(
-        ...     config_name='example',
-        ...     url='https://example.com/config.yaml',
-        ...     dest_parent=themes_dir,
-        ...     override=True,
-        ... )
-        """
-
-        self.save.save_config(config_name, url, dest_parent, override)
-
-    def execute(self, actions: Dict[str, Any]):
-        url = actions['url']
-        name = actions['name']
-        if name is None or len(name) == 0:
-            name = Path(urlparse(url).path).stem
-        override = 'override' in actions
-        dest_parent = themes_dir if 'theme' in actions else saves_dir
-        self.install(name, url, dest_parent, override)
+    if config_name is None or len(config_name) == 0:
+        config_name = Path(urlparse(url).path).stem
+    dest_parent = themes_dir if as_theme else saves_dir
+    save_config(config_name, url, dest_parent, override)

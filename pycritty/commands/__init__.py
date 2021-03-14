@@ -1,14 +1,6 @@
-from .pycritty import Pycritty
-from .ls import ListResource
-from .save import SaveConfig
-from .load import LoadConfig
-from .install import Install
-from .rm import Remove
-
-subcommands = {
-    'ls': ListResource,
-    'save': SaveConfig,
-    'load': LoadConfig,
-    'install': Install,
-    'rm': Remove,
-}
+from . import pycritty
+from . import ls
+from . import save
+from . import load
+from . import install
+from . import rm

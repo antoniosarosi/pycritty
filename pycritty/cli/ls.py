@@ -6,7 +6,7 @@ list_parser = subparsers.add_parser(
     'ls',
     help='List available resources',
     formatter_class=formatter(),
-    argument_default=argparse.SUPPRESS,
+    argument_default=False,
 )
 
 list_parser.add_argument(
@@ -29,7 +29,9 @@ list_parser.add_argument(
 
 list_parser.add_argument(
     '-a', '--all',
+    dest='list_all',
     action='store_true',
+    default=True,
     help='List all (default)',
 )
 

@@ -1,53 +1,66 @@
 from typing import List, Dict, Any
-from .command import Command
 from .. import PycrittyError
 from ..resources import fonts_file, themes_dir, saves_dir
 from ..resources.resource import Resource
 from ..io import log
 from ..io.yio import read_yaml
+from .command import pycritty
 
 
-class ListResource(Command):
-    def __init__(self):
-        self.options = {
-            'themes': ('Themes', log.Color.BLUE, self.list_themes),
-            'fonts': ('Fonts', log.Color.PURPLE, self.list_fonts),
-            'configs': ('Configs', log.Color.CYAN, self.list_configs),
-        }
+def list_dir(directory: Resource):
+    return [file.stem for file in directory.path.iterdir()]
 
-    def _list_dir(self, directory: Resource):
-        return [file.stem for file in directory.path.iterdir()]
 
-    def list_themes(self) -> List[str]:
-        if not themes_dir.exists():
-            raise PycrittyError(
-                f'Failed listing themes, directory {themes_dir.path} not found'
-            )
+def list_themes() -> List[str]:
+    if not themes_dir.exists():
+        raise PycrittyError(f'Failed listing themes, directory {themes_dir.path} not found')
 
-        return self._list_dir(themes_dir)
+    return list_dir(themes_dir)
 
-    def list_configs(self) -> List[str]:
-        if not saves_dir.exists():
-            raise PycrittyError(f'Cannot list saves, {saves_dir} not found')
 
-        return self._list_dir(saves_dir)
+def list_configs() -> List[str]:
+    if not saves_dir.exists():
+        raise PycrittyError(f'Cannot list saves, {saves_dir} not found')
 
-    def list_fonts(self) -> List[str]:
-        if not fonts_file.exists():
-            raise PycrittyError(
-                f'Failed listing fonts, file {fonts_file.path} not found'
-            )
+    return list_dir(saves_dir)
 
-        fonts_yaml = read_yaml(fonts_file)
-        if fonts_yaml is None or 'fonts' not in fonts_yaml:
-            fonts = []
-        else:
-            fonts = fonts_yaml['fonts'].keys()
 
-        return fonts
+def list_fonts() -> List[str]:
+    if not fonts_file.exists():
+        raise PycrittyError(f'Failed listing fonts, file {fonts_file.path} not found')
 
-    def print_list(self, option: str, iterable=True):
-        header, color, get_list = self.options[option]
+    fonts_yaml = read_yaml(fonts_file)
+    if fonts_yaml is None or 'fonts' not in fonts_yaml:
+        fonts = []
+    else:
+        fonts = fonts_yaml['fonts'].keys()
+
+    return fonts
+
+
+@pycritty.command("ls")
+def print_list(list_all=True, themes=False, fonts=False, configs=False, iterable=False):
+    to_be_listed = {
+        'themes': themes,
+        'fonts': fonts,
+        'configs': configs,
+    }
+
+    # Ignore list_all if something else has been specified
+    if not any(to_be_listed.values()) and list_all:
+        for k in to_be_listed:
+            to_be_listed[k] = True
+    
+    options = {
+        'themes': ('Themes', log.Color.BLUE, list_themes),
+        'fonts': ('Fonts', log.Color.PURPLE, list_fonts),
+        'configs': ('Configs', log.Color.CYAN, list_configs),
+    }
+
+    for opt in options:
+        if not to_be_listed[opt]:
+            continue
+        header, color, get_list = options[opt]
         if not iterable:
             log.color_print(f'{header}:', default_color=log.Color.BOLD)
         ls = get_list()
@@ -57,18 +70,3 @@ class ListResource(Command):
         else:
             for item in ls:
                 log.color_print(f'{tabs}{item}', default_color=color)
-            
-    def execute(self, args: Dict[str, Any]):
-        iterable = False
-        if 'iterable' in args:
-            iterable = True
-            args.pop('iterable')
-        if len(args) < 1:
-            args['all'] = True
-        if 'all' in args:
-            for opt in self.options:
-                args[opt] = True
-            args.pop('all')
-        for opt in args:
-            if opt in self.options:
-                self.print_list(opt, iterable)

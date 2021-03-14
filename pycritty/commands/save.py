@@ -1,35 +1,28 @@
 from typing import Dict, Any, Union
 from pathlib import Path
 from .. import PycrittyError
-from .command import Command
 from ..io import log, yio
-from ..resources import config_file, saves_dir
+from ..resources import config_file, saves_dir, themes_dir
 from ..resources.resource import ConfigFile
+from .command import pycritty
 
 
-class SaveConfig(Command):
-    def save_config(
-        self,
-        config_name: str,
-        read_from: Union[str, Path, ConfigFile] = config_file,
-        dest_parent=saves_dir,
-        override=False
-    ):
-        dest_file = ConfigFile(dest_parent.get_or_create(), config_name, ConfigFile.YAML)
-        if dest_file.exists() and not override:
-            raise PycrittyError(
-                f'Config "{config_name}" already exists, use -o to override'
-            )
+@pycritty.command('save')
+def save_config(
+    name: str,
+    read_from: Union[str, Path, ConfigFile] = config_file,
+    dest_parent=saves_dir,
+    override=False
+):
+    dest_file = ConfigFile(dest_parent.get_or_create(), name, ConfigFile.YAML)
+    word_to_use = "Theme" if dest_parent == themes_dir else "Config"
+    if dest_file.exists() and not override:
+        raise PycrittyError(f'{word_to_use} "{name}" already exists, use -o to override')
 
-        conf = yio.read_yaml(read_from)
-        if conf is None or len(conf) < 1:
-            log.warn(f'"{read_from}" has no content')
-        else:
-            dest_file.create()
-            yio.write_yaml(conf, dest_file)
-            log.ok('Config saved =>', log.Color.BLUE, dest_file)
-
-    def execute(self, actions: Dict[str, Any]):
-        config_name = actions['name']
-        override = 'override' in actions
-        self.save_config(config_name, override=override)
+    conf = yio.read_yaml(read_from)
+    if conf is None or len(conf) < 1:
+        log.warn(f'"{read_from}" has no content')
+    else:
+        dest_file.create()
+        yio.write_yaml(conf, dest_file)
+        log.ok(f'{word_to_use} saved =>', log.Color.BLUE, dest_file)

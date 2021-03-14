@@ -1,8 +1,8 @@
 from typing import Dict, Callable, Any
 from collections.abc import Mapping
-from .command import Command
 from .. import resources, PycrittyError
 from ..io import log, yio
+from .command import pycritty
 
 
 class ConfigError(PycrittyError):
@@ -10,7 +10,7 @@ class ConfigError(PycrittyError):
         super().__init__(message)
 
 
-class Pycritty(Command):
+class Config:
     """Applies changes to the config
 
     >>> conf = Pycritty()
@@ -26,25 +26,6 @@ class Pycritty(Command):
 
     def apply(self):
         yio.write_yaml(self.config, resources.config_file)
-    
-    def execute(self, actions: Dict[str, Any]):
-        if len(actions) < 1:
-            log.warn('Nothing to do, use -h for help')
-            return
-
-        errors = 0
-        for method, args in actions.items():
-            try:
-                call = getattr(self, method)
-                call(args)
-            except (PycrittyError, AttributeError) as e:
-                log.err(e)
-                errors += 1
-
-        self.apply()
-
-        if errors > 0:
-            raise PycrittyError(f'\n{errors} error(s) found')
 
     def set(self, **kwargs):
         """Set multiple changes at once
@@ -53,19 +34,28 @@ class Pycritty(Command):
         >>> conf.set(theme='onedark', font='UbuntuMono', font_size=14, opacity=1)
         >>> conf.apply()
         """
-
         options: Dict[str, Callable[[Any], Any]] = {
             'theme': self.change_theme,
             'font': self.change_font,
-            'font_size': self.change_font_size,
-            'font_offset': self.change_font_offset,
+            'size': self.change_font_size,
+            'offset': self.change_font_offset,
             'padding': self.change_padding,
             'opacity': self.change_opacity,
         }
 
+        errors = 0
+
         for opt, arg in kwargs.items():
             if opt in options:
-                options[opt](arg)
+                try:
+                    options[opt](arg)
+                except PycrittyError as e:
+                    log.err(e)
+                    errors += 1
+
+        if errors > 0:
+            raise ConfigError('\nFailed applying some settings')
+        
 
     def change_theme(self, theme: str):
         theme_file = resources.get_theme(theme)
@@ -197,3 +187,10 @@ class Pycritty(Command):
         self.config['font']['offset']['x'] = x
         self.config['font']['offset']['y'] = y
         log.ok(f'Offset set to x: {x}, y: {y}')
+
+
+@pycritty.command('pycritty')
+def set_config(**kwargs):
+    config = Config()
+    config.set(**kwargs)
+    config.apply()
