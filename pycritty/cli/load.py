@@ -1,16 +1,12 @@
-import argparse
-from .pycritty import subparsers, formatter
+from .pycritty import pycritty_cli
+from ..commands.load import LoadConfig
+import click
 
 
-load_parser = subparsers.add_parser(
-    'load',
-    formatter_class=formatter(),
-    help="Load a saved config",
-    argument_default=argparse.SUPPRESS,
-)
+@pycritty_cli.command('load')
+@click.argument('config')
+def load(config):
+    """Load a saved config"""
 
-load_parser.add_argument(
-    'load_config',
-    metavar='NAME',
-    help='Name of the config you want to load',
-)
+    return LoadConfig, { 'load_config' : config }
+
