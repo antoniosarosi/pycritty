@@ -17,10 +17,10 @@ class ValidURL(click.ParamType):
 
 @pycritty_cli.command('install')
 @click.argument('url', type=ValidURL)
-@click.argument('name')
+@click.option('-n', '--name', help='Name to save the configuration as. Derived from URL if not present')
 @click.option('-o', '--override', help='Override existing config')
 @click.option('-t', '--theme', 'is_theme', is_flag=True, help='Install as theme instead of config file')
-def install(url, name, override=False, is_theme=False):
+def install(url, name='', override=False, is_theme=False):
     opts = dict(url=url, name=name, override=override)
     if is_theme:
         opts['theme'] = True
