@@ -1,38 +1,18 @@
-import argparse
-from .pycritty import subparsers, formatter
+from .pycritty import pycritty_cli
+from ..commands.rm import Remove
+import click
 
 
-remove_parser = subparsers.add_parser(
-    'rm',
-    help='Remove config files (themes or saves)',
-    formatter_class=formatter(),
-    argument_default=argparse.SUPPRESS,
-)
+@pycritty_cli.command('rm')
+@click.argument('configs', nargs=-1)
+@click.option('-t', '--theme', 'is_theme', is_flag=True, help='Remove theme file instead of saved config file')
+@click.option('-f', '--force', is_flag=True, help="Don't prompt for confirmation")
+def rm(configs, is_theme=False, force=False):
+    """Remove config files (themes or saves)"""
 
-remove_parser.add_argument(
-    'configs',
-    metavar='name',
-    nargs='+',
-    help='Themes or saved configs to be removed',
-)
+    actions = {'configs': configs, 'force': force}
 
-group = remove_parser.add_mutually_exclusive_group()
+    if is_theme:
+        actions['theme'] = True
 
-group.add_argument(
-    '-c', '--config',
-    action='store_true',
-    help='Remove saved config (default)',
-)
-
-group.add_argument(
-    '-t', '--theme',
-    dest='theme',
-    action='store_true',
-    help='Remove theme',
-)
-
-remove_parser.add_argument(
-    '-f', '--force',
-    action='store_true',
-    help="Don't prompt for confirmation",
-)
+    return Remove, actions

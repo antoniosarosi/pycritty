@@ -1,4 +1,5 @@
 from .pycritty import pycritty_cli
+from .rm import rm
 # from .pycritty import parser, subparsers
 # from .ls import list_parser
 # from .save import save_parser

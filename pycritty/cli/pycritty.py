@@ -1,7 +1,6 @@
 from .. import __version__
 from ..commands.pycritty import Pycritty
-
-
+import click
 
 
 class XYFloatPair(click.ParamType):
@@ -21,7 +20,7 @@ class XYFloatPair(click.ParamType):
             self.fail('Expected two floats in the form X:Y')
 
 
-@click.group(invoke_without_command=True)
+@click.group(chain=True, invoke_without_command=True)
 @click.option('theme', '-t', '--theme', help='Change theme, choose from ~/.config/alacritty/themes')
 @click.option('-f', '--font', help='Change font family, from ~/.config/alacritty/fonts.yaml')
 @click.option('-p', '--padding', help='Change window padding X Y values', type=XYFloatPair())
@@ -32,6 +31,14 @@ class XYFloatPair(click.ParamType):
 @click.version_option(__version__, prog_name='Pycritty')
 def pycritty_cli(**options):
     """Change your Alacritty config on the fly!"""
+
+
+@pycritty_cli.resultcallback()
+def pycritty_cli_cb(rest, **options):
+    print(rest)
+
+
+    # apply my options
     opts = {k: v for k, v in options.items() if v is not None}
     conf = Pycritty()
 
