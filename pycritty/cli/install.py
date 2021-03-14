@@ -1,42 +1,28 @@
-import argparse
-from .pycritty import subparsers, formatter
+from .pycritty import pycritty_cli
+from ..commands.install import Install
+import click
+from urllib.parse import urlparse
 
 
-install_parser = subparsers.add_parser(
-    'install',
-    formatter_class=formatter(),
-    help="Install a config file or theme from a url",
-    argument_default=argparse.SUPPRESS,
-)
+class ValidURL(click.ParamType):
+    name = "URL"
 
-install_parser.add_argument(
-    'url',
-    help='URL where the config is located',
-)
+    def convert(self, value, param, ctx):
+        try:
+            urlparse(value)
+            return value
+        except:
+            self.fail(f"Not a valid URL: {value!r}")
 
-install_parser.add_argument(
-    '-n', '--name',
-    metavar='NAME',
-    default='',
-    help='Name of the config/theme once installed',
-)
 
-install_parser.add_argument(
-    '-o', '--override',
-    action='store_true',
-    help='Override existing config',
-)
+@pycritty_cli.command('install')
+@click.argument('url', type=ValidURL)
+@click.argument('name')
+@click.option('-o', '--override', help='Override existing config')
+@click.option('-t', '--theme', 'is_theme', is_flag=True, help='Install as theme instead of config file')
+def install(url, name, override=False, is_theme=False):
+    opts = dict(url=url, name=name, override=override)
+    if is_theme:
+        opts['theme'] = True
 
-group = install_parser.add_mutually_exclusive_group()
-
-group.add_argument(
-    '-t', '--theme',
-    action='store_true',
-    help='Install as theme',
-)
-
-group.add_argument(
-    '-c', '--config',
-    action='store_true',
-    help='Install as a config file in your saves directory (default)',
-)
+    return Install, opts
