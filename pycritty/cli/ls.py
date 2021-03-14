@@ -1,40 +1,14 @@
-import argparse
-from .pycritty import subparsers, formatter
+from .pycritty import pycritty_cli
+from ..commands.ls import ListResource
+import click
 
 
-list_parser = subparsers.add_parser(
-    'ls',
-    help='List available resources',
-    formatter_class=formatter(),
-    argument_default=argparse.SUPPRESS,
-)
-
-list_parser.add_argument(
-    '-t', '--themes',
-    action='store_true',
-    help='List themes',
-)
-
-list_parser.add_argument(
-    '-f', '--fonts',
-    action='store_true',
-    help='List fonts',
-)
-
-list_parser.add_argument(
-    '-c', '--configs',
-    action='store_true',
-    help='List saved configs',
-)
-
-list_parser.add_argument(
-    '-a', '--all',
-    action='store_true',
-    help='List all (default)',
-)
-
-list_parser.add_argument(
-    '-i', '--iterable',
-    action='store_true',
-    help='Output list in iterable format (for scripts)',
-)
+@pycritty_cli.command('ls')
+@click.option('-t', '--themes', is_flag=True,  help='List themes')
+@click.option('-f', '--fonts', is_flag=True,  help='List fonts')
+@click.option('-c', '--configs', is_flag=True,  help='List configs')
+@click.option('-a', '--all', is_flag=True,  help='List all')
+@click.option('-i', '--iterable', is_flag=True, help='List in iterable format (for scripts)')
+def ls(**options):
+    """List available resources"""
+    return ListResource, { k:v for k, v in options.items() if v }
