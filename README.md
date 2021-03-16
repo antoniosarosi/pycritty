@@ -30,6 +30,17 @@ your shell won't find the ```pycritty``` command. Add this line to your
 export PATH=$HOME/.local/bin:$PATH
 ```
 
+Also if you are an Arch user you can install from the AUR (only the program will be installed)
+```bash
+git clone https://aur.archlinux.org/pycritty.git
+cd pycritty
+makepkg -si
+```
+Or with an AUR helper like yay
+```bash
+yay -S pycritty
+```
+
 ## Usage:
 
 Change your current config:
