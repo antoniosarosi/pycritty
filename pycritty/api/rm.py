@@ -1,11 +1,9 @@
 from typing import Dict, Any, List
-from ..resources import saves_dir, themes_dir
-from ..resources.resource import Resource, ConfigFile
-from ..io import log
-from .command import pycritty
+from pycritty.resources import saves_dir, themes_dir
+from pycritty.resources.resource import Resource, ConfigFile
+from pycritty.io import log
 
 
-@pycritty.command('rm')
 def remove(configs: List[str], from_themes=False, force=False):
     config_parent = themes_dir if from_themes else saves_dir
     for conf in configs:

@@ -35,7 +35,7 @@ export PATH=$HOME/.local/bin:$PATH
 Change your current config:
 
 ```bash
-pycritty --font UbuntuMono --size 14 --opacity 0.95
+pycritty --font UbuntuMono --font-size 14 --opacity 0.95 --padding 3 3
 ```
 
 Save multiple configs and reuse them later:
@@ -47,10 +47,10 @@ pycritty load AnotherConfig
 
 Install themes and configs from URLs:
 ```bash
-pycritty install -t https://raw.githubusercontent.com/antoniosarosi/pycritty/master/config/themes/breeze.yaml
-pycritty -t breeze
-pycritty install -c -n SomeCoolConfig https://raw.githubusercontent.com/antoniosarosi/dotfiles/master/.config/alacritty/config.yaml
-pycritty load SomeCoolConfig
+pycritty install --theme https://raw.githubusercontent.com/antoniosarosi/pycritty/master/config/themes/breeze.yaml
+pycritty --theme breeze # Apply downloaded theme
+pycritty install --config --name SomeCoolConfig https://raw.githubusercontent.com/antoniosarosi/dotfiles/master/.config/alacritty/config.yaml
+pycritty load SomeCoolConfig # Apply downloaded config
 ```
 
 Check help for all available options:
@@ -62,7 +62,7 @@ pycritty save -h
 
 ## Fonts Config
 
-Fonts are configured in ```~/.config/alacritty/fonts.yaml``` with this format:
+Fonts are configured at ```~/.config/alacritty/fonts.yaml``` with this format:
 ```yaml
 fonts:
     Alias: Font Name
@@ -143,18 +143,17 @@ the CLI in a shell script or use ```pycritty``` as a python module:
 
 # Dummy script that changes the theme every 5 minutes
 
-from time import sleep
-from pycritty.commands import Pycritty, ListResource
+import time
+import pycritty
 
 
 def main():
-    ls = ListResource()
-    conf = Pycritty()
+    config = pycritty.Config()
     while True:
-        for theme in ls.list_themes():
-            conf.change_theme(theme)  # or conf.set(theme=theme)
-            conf.apply()
-            sleep(300)
+        for theme in pycritty.list_themes():
+            config.change_theme(theme)  # or config.set(theme=theme)
+            config.apply()
+            time.sleep(300)
 
 
 if __name__ == '__main__':
@@ -173,4 +172,14 @@ while :; do
         sleep 300
     done
 done
+```
+
+## Development
+
+Clone the repository and run it as a module.
+
+```bash
+git clone git@github.com:antoniosarosi/pycritty
+cd pycritty
+python -m pycritty.main
 ```

@@ -1,10 +1,8 @@
 from typing import List, Dict, Any
-from .. import PycrittyError
-from ..resources import fonts_file, themes_dir, saves_dir
-from ..resources.resource import Resource
-from ..io import log
-from ..io.yio import read_yaml
-from .command import pycritty
+from pycritty import PycrittyError
+from pycritty.resources import fonts_file, themes_dir, saves_dir
+from pycritty.resources.resource import Resource
+from pycritty.io import log, yaml_io
 
 
 def list_dir(directory: Resource):
@@ -29,7 +27,7 @@ def list_fonts() -> List[str]:
     if not fonts_file.exists():
         raise PycrittyError(f'Failed listing fonts, file {fonts_file.path} not found')
 
-    fonts_yaml = read_yaml(fonts_file)
+    fonts_yaml = yaml_io.read(fonts_file)
     if fonts_yaml is None or 'fonts' not in fonts_yaml:
         fonts = []
     else:
@@ -38,7 +36,6 @@ def list_fonts() -> List[str]:
     return fonts
 
 
-@pycritty.command("ls")
 def print_list(list_all=True, themes=False, fonts=False, configs=False, iterable=False):
     to_be_listed = {
         'themes': themes,

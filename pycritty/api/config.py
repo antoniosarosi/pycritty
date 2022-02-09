@@ -1,8 +1,7 @@
 from typing import Dict, Callable, Any
 from collections.abc import Mapping
-from .. import resources, PycrittyError
-from ..io import log, yio
-from .command import pycritty
+from pycritty import resources, PycrittyError
+from pycritty.io import log, yaml_io
 
 
 class ConfigError(PycrittyError):
@@ -13,19 +12,19 @@ class ConfigError(PycrittyError):
 class Config:
     """Applies changes to the config
 
-    >>> conf = Pycritty()
+    >>> conf = Config()
     >>> conf.change_theme('dracula')
     >>> conf.change_font('UbuntuMono')
     >>> conf.apply()
     """
 
     def __init__(self):
-        self.config = yio.read_yaml(resources.config_file.get_or_create())
+        self.config = yaml_io.read(resources.config_file.get_or_create())
         if self.config is None:
             self.config = {}
 
     def apply(self):
-        yio.write_yaml(self.config, resources.config_file)
+        yaml_io.write(self.config, resources.config_file)
 
     def set(self, **kwargs):
         """Set multiple changes at once
@@ -37,7 +36,7 @@ class Config:
         options: Dict[str, Callable[[Any], Any]] = {
             'theme': self.change_theme,
             'font': self.change_font,
-            'size': self.change_font_size,
+            'font_size': self.change_font_size,
             'offset': self.change_font_offset,
             'padding': self.change_padding,
             'opacity': self.change_opacity,
@@ -62,7 +61,7 @@ class Config:
         if not theme_file.exists():
             raise PycrittyError(f'Theme "{theme}" not found')
 
-        theme_yaml = yio.read_yaml(theme_file)
+        theme_yaml = yaml_io.read(theme_file)
         if theme_yaml is None:
             raise ConfigError(f'File {theme_file} is empty')
         if 'colors' not in theme_yaml:
@@ -102,7 +101,7 @@ class Config:
             log.warn(f'"font" prop was not present in {resources.config_file}')
 
         fonts_file = resources.fonts_file.get_or_create()
-        fonts = yio.read_yaml(fonts_file)
+        fonts = yaml_io.read(fonts_file)
         if fonts is None:
             raise ConfigError(
                 f'Failed changing font, file "{fonts_file}" is empty'
@@ -189,8 +188,10 @@ class Config:
         log.ok(f'Offset set to x: {x}, y: {y}')
 
 
-@pycritty.command('pycritty')
 def set_config(**kwargs):
     config = Config()
-    config.set(**kwargs)
-    config.apply()
+    try:
+        config.set(**kwargs)
+    finally:
+        config.apply()
+ 

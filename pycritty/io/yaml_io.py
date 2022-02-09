@@ -6,8 +6,8 @@ from urllib.parse import urlparse
 from urllib.error import URLError
 from pathlib import Path
 import yaml
-from ..resources.resource import Resource
-from .. import PycrittyError
+from pycritty.resources.resource import Resource
+from pycritty import PycrittyError
 
 
 class YamlIOError(PycrittyError):
@@ -18,12 +18,12 @@ class YamlParseError(PycrittyError):
     pass
 
 
-def read_yaml(url: Union[str, Path, Resource]) -> Dict[str, Any]:
+def read(url: Union[str, Path, Resource]) -> Dict[str, Any]:
     """Read YAML from a URL or from the local file system
 
-    >>> y1 = read_yaml('https://example.io/config.yaml')
+    >>> y1 = read('https://example.io/config.yaml')
     {'example': 'test'}
-    >>> y2 = read_yaml(Path().home() / 'example.yaml')
+    >>> y2 = read(Path().home() / 'example.yaml')
     {'another_example': 123}
     """
 
@@ -53,10 +53,10 @@ def read_yaml(url: Union[str, Path, Resource]) -> Dict[str, Any]:
         ))
 
 
-def write_yaml(y: Dict[str, Any], file: Union[Path, Resource]):
+def write(y: Dict[str, Any], file: Union[Path, Resource]):
     """Write YAML to a file in the local system
 
-    >>> write_yaml({'example': 123}, Path().home() / 'exmaple.yaml')
+    >>> write({'example': 123}, Path().home() / 'exmaple.yaml')
     """
 
     if isinstance(file, Resource):

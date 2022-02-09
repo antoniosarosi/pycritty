@@ -2,10 +2,9 @@
 # Antonio Sarosi
 # December 2020
 
-from . import PycrittyError
-from .io import log
-from .cli import parser
-from .commands.command import pycritty
+from pycritty import PycrittyError
+from pycritty.io import log
+from pycritty.cli import parser, cli
 
 
 def fail(err):
@@ -20,7 +19,7 @@ def main():
         parser.print_help()
         exit(0)
     try:
-        pycritty.execute(subcommand, args)
+        cli.execute(subcommand, args)
     except PycrittyError as e:
         fail(e)
     except KeyboardInterrupt:

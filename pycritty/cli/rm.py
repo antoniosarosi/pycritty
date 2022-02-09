@@ -1,5 +1,5 @@
 import argparse
-from .pycritty import subparsers, formatter
+from pycritty.cli import subparsers, formatter
 
 
 remove_parser = subparsers.add_parser(

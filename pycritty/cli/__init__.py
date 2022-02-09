@@ -1,6 +1,9 @@
-from .pycritty import parser, subparsers
-from .ls import list_parser
-from .save import save_parser
-from .load import load_parser
-from .install import install_parser
-from .rm import remove_parser
+from pycritty.cli.pycritty import parser, subparsers, formatter
+
+import pycritty.cli.ls
+import pycritty.cli.save
+import pycritty.cli.load
+import pycritty.cli.rm
+import pycritty.cli.install
+
+from pycritty.cli.cli import cli

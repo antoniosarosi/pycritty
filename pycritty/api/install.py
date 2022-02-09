@@ -1,13 +1,11 @@
 from typing import Dict, Any, Union
 from urllib.parse import urlparse
 from pathlib import Path
-from ..resources import saves_dir, themes_dir
-from ..resources.resource import Resource
-from .save import save_config
-from .command import pycritty
+from pycritty.resources import saves_dir, themes_dir
+from pycritty.resources.resource import Resource
+from pycritty.api.save import save_config
 
 
-@pycritty.command('install')
 def install(
     config_name: str = None,
     url: Union[str, Path, Resource] = None,

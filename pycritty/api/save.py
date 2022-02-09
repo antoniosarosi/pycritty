@@ -1,13 +1,11 @@
 from typing import Dict, Any, Union
 from pathlib import Path
-from .. import PycrittyError
-from ..io import log, yio
-from ..resources import config_file, saves_dir, themes_dir
-from ..resources.resource import ConfigFile
-from .command import pycritty
+from pycritty import PycrittyError
+from pycritty.io import log, yaml_io
+from pycritty.resources import config_file, saves_dir, themes_dir
+from pycritty.resources.resource import ConfigFile
 
 
-@pycritty.command('save')
 def save_config(
     name: str,
     read_from: Union[str, Path, ConfigFile] = config_file,
@@ -19,10 +17,10 @@ def save_config(
     if dest_file.exists() and not override:
         raise PycrittyError(f'{word_to_use} "{name}" already exists, use -o to override')
 
-    conf = yio.read_yaml(read_from)
+    conf = yaml_io.read(read_from)
     if conf is None or len(conf) < 1:
         log.warn(f'"{read_from}" has no content')
     else:
         dest_file.create()
-        yio.write_yaml(conf, dest_file)
+        yaml_io.write(conf, dest_file)
         log.ok(f'{word_to_use} saved =>', log.Color.BLUE, dest_file)
