@@ -183,3 +183,20 @@ git clone git@github.com:antoniosarosi/pycritty
 cd pycritty
 python -m pycritty.main
 ```
+
+## Publishing
+
+### PyPi
+
+```bash
+# First make sure you have these packages installed
+pip install --user --upgrade setuptools wheel twine
+# Generate distribution files
+python setup.py sdist bdist_wheel
+# Test upload
+python -m twine upload --repository testpypi dist/*
+# Test download
+pip install -i https://test.pypi.org/simple/ --no-deps pycritty
+# Upload to PyPi
+python -m twine upload --repository pypi dist/*
+```
