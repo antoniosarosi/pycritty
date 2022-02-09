@@ -164,7 +164,14 @@ class Pycritty(Command):
         if opacity < 0.0 or opacity > 1.0:
             raise ConfigError('Opacity should be between 0.0 and 1.0')
 
-        self.config['background_opacity'] = opacity
+        if 'window' not in self.config:
+            self.config['window'] = {}
+            log.warn(f'"window" prop was not present in {resources.config_file}')
+        if 'opacity' not in self.config['window']:
+            self.config['window']['opacity'] = {}
+            log.warn(f'"opacity" prop was not present in {resources.config_file}')
+
+        self.config['window']['opacity']  = opacity
         log.ok(f'Opacity set to {opacity:.2f}')
 
     def change_padding(self, padding=(1, 1)):
