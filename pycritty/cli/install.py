@@ -1,5 +1,5 @@
 import argparse
-from .pycritty import subparsers, formatter
+from pycritty.cli import subparsers, formatter
 
 
 install_parser = subparsers.add_parser(
@@ -17,6 +17,7 @@ install_parser.add_argument(
 install_parser.add_argument(
     '-n', '--name',
     metavar='NAME',
+    dest='config_name',
     default='',
     help='Name of the config/theme once installed',
 )
@@ -31,6 +32,7 @@ group = install_parser.add_mutually_exclusive_group()
 
 group.add_argument(
     '-t', '--theme',
+    dest='as_theme',
     action='store_true',
     help='Install as theme',
 )

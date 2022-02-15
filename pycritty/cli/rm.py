@@ -1,5 +1,5 @@
 import argparse
-from .pycritty import subparsers, formatter
+from pycritty.cli import subparsers, formatter
 
 
 remove_parser = subparsers.add_parser(
@@ -26,7 +26,7 @@ group.add_argument(
 
 group.add_argument(
     '-t', '--theme',
-    dest='theme',
+    dest='from_themes',
     action='store_true',
     help='Remove theme',
 )

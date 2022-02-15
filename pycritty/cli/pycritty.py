@@ -1,5 +1,5 @@
 import argparse
-from .. import __version__
+from pycritty import __version__
 
 
 def formatter(indent_increment=2, max_help_position=40, width=None):
@@ -25,27 +25,24 @@ parser.add_argument(
 
 parser.add_argument(
     '-t', '--theme',
-    dest='change_theme',
     metavar='THEME',
     help='Change theme, choose from ~/.config/alacritty/themes',
 )
 parser.add_argument(
     '-f', '--font',
-    dest='change_font',
     metavar='FONT',
     help='Change font family, choose from ~/.config/alacritty/fonts.yaml',
 )
 parser.add_argument(
-    '-s', '--size',
+    '-s', '--font-size',
     type=float,
-    dest='change_font_size',
+    dest='font_size',
     metavar='SIZE',
     help='Change font size',
 )
 parser.add_argument(
     '-o', '--opacity',
     type=float,
-    dest='change_opacity',
     metavar='OPACITY',
     help='Change background opacity',
 )
@@ -54,7 +51,6 @@ parser.add_argument(
     metavar=('X', 'Y'),
     type=int,
     nargs=2,
-    dest='change_padding',
     help='Change window padding X Y values',
 )
 parser.add_argument(
@@ -62,8 +58,10 @@ parser.add_argument(
     metavar=('X', 'Y'),
     type=int,
     nargs=2,
-    dest='change_font_offset',
     help='Change offset, X is space between chars and Y is line height',
 )
 
-subparsers = parser.add_subparsers(title='subcommands', dest='subcommand',)
+subparsers = parser.add_subparsers(
+    title='subcommands',
+    dest='subcommand',
+)

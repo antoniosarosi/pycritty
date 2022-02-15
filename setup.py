@@ -2,7 +2,7 @@ import setuptools
 from setuptools.command.install import install
 from pathlib import Path
 from pycritty import __version__
-from pycritty.resources import base_dir, config_file
+from pycritty.resources import pycritty_dir, alacritty_dir, config_file
 
 
 class PostInstallHook(install):
@@ -23,7 +23,8 @@ class PostInstallHook(install):
 
     def hook(self):
         installation_resources = Path(__file__).parent / 'config'
-        base_dir.create()
+        pycritty_dir.create()
+        alacritty_dir.create()
         config_file.create()
 
         theme_files = list((installation_resources / 'themes').iterdir())
@@ -39,7 +40,7 @@ class PostInstallHook(install):
                 if f.stem in include:
                     self.exclude.remove(f)
 
-        self.cp(installation_resources, base_dir.path)
+        self.cp(installation_resources, pycritty_dir.path)
 
     def cp(self, src_dir: Path, dest_dir: Path):
         for src_child in src_dir.iterdir():

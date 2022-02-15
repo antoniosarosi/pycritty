@@ -2,26 +2,28 @@
 # Antonio Sarosi
 # December 2020
 
-from . import PycrittyError
-from .io import log
-from .commands import subcommands, Pycritty
-from .cli import parser
+from pycritty import PycrittyError
+from pycritty.io import log
+from pycritty.cli import parser, cli
+
+
+def fail(err):
+    log.err(err)
+    exit(1)
 
 
 def main():
     args = vars(parser.parse_args())
-    if args['subcommand'] is None:
-        command_receiver = Pycritty
-    else:
-        command_receiver = subcommands[args['subcommand']]
-    args.pop('subcommand')
+    subcommand = args.pop('subcommand')
+    if len(args) < 1:
+        parser.print_help()
+        exit(0)
     try:
-        command_receiver().execute(args)
-    except (PycrittyError, KeyboardInterrupt) as e:
-        if isinstance(e, KeyboardInterrupt):
-            e = 'Interrupted, changes might not have been applied'
-        log.err(e)
-        exit(1)
+        cli.execute(subcommand, args)
+    except PycrittyError as e:
+        fail(e)
+    except KeyboardInterrupt:
+        fail('Interrupted, changes might not have been applied')
 
 
 if __name__ == '__main__':
