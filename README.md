@@ -211,3 +211,19 @@ pip install -i https://test.pypi.org/simple/ --no-deps pycritty
 # Upload to PyPi
 python -m twine upload --repository pypi dist/*
 ```
+
+### AUR
+```bash
+# In the AUR repository
+sed -i "s/^pkgver=[[:digit:]].[[:digit:]].[[:digit:]]/pkgver=$(python -m pycritty.main -v)/" PKGBUILD
+updpkgsums
+makepkg --printsrcinfo > .SRCINFO
+
+# Theoretically this package should be fine with only update its version and checksums
+# but you have to check if this package compiles or not
+git add PKGBUILD .SRCINFO
+# Commits will be authored with global git name and email address
+# If you want to use different credentials change them with git config
+git commit -m "bump to $(python -m pycritty.main -v)"
+git push
+```
