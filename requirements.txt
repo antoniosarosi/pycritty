@@ -1,0 +1,3 @@
+mypy==0.931
+pytest==7.0.1
+PyYAML==6.0
