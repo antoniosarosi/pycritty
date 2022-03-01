@@ -1,33 +1,34 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List, Optional
+
 from pycritty import PycrittyError
-from pycritty.resources import fonts_file, themes_dir, saves_dir
-from pycritty.resources.resource import Resource
 from pycritty.io import log, yaml_io
+from pycritty.resources import fonts_file, saves_dir, themes_dir
+from pycritty.resources.resource import ConfigDir, ConfigFile
 
 
-def list_dir(directory: Resource):
+def list_dir(directory: ConfigDir):
     return [file.stem for file in directory.path.iterdir()]
 
 
-def list_themes() -> List[str]:
-    if not themes_dir.exists():
-        raise PycrittyError(f'Failed listing themes, directory {themes_dir.path} not found')
+def list_themes(target_dir: ConfigDir = themes_dir) -> List[str]:
+    if not target_dir.exists():
+        raise PycrittyError(f'Failed listing themes, directory {target_dir.path} not found')
 
-    return list_dir(themes_dir)
-
-
-def list_configs() -> List[str]:
-    if not saves_dir.exists():
-        raise PycrittyError(f'Cannot list saves, {saves_dir} not found')
-
-    return list_dir(saves_dir)
+    return list_dir(target_dir)
 
 
-def list_fonts() -> List[str]:
-    if not fonts_file.exists():
-        raise PycrittyError(f'Failed listing fonts, file {fonts_file.path} not found')
+def list_configs(target_dir: ConfigDir = saves_dir) -> List[str]:
+    if not target_dir.exists():
+        raise PycrittyError(f'Cannot list saves, {target_dir} not found')
 
-    fonts_yaml = yaml_io.read(fonts_file)
+    return list_dir(target_dir)
+
+
+def list_fonts(target_file: ConfigFile = fonts_file) -> List[str]:
+    if not target_file.exists():
+        raise PycrittyError(f'Failed listing fonts, file {target_file.path} not found')
+
+    fonts_yaml = yaml_io.read(target_file)
     if fonts_yaml is None or 'fonts' not in fonts_yaml:
         fonts = []
     else:
