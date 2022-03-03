@@ -1,0 +1,39 @@
+name: ci_pipeline
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - "*"
+jobs:
+  MyPy-Validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install mypy
+        run: pip install -r requirements.txt
+      - name: Run mypy
+        run: mypy .
+  Flake8-Validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install flake8
+        run: pip install -r requirements.txt
+      - name: Run flake8
+        run: flake8
+  Run-Unit-Test:
+    runs-on: ubuntu-latest
+    needs:
+      - MyPy-Validation
+      - Flake8-Validation
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: pytest tests
