@@ -47,14 +47,12 @@ def read(url: Union[str, Path, Resource]) -> Dict[str, Any]:
     except (UnicodeDecodeError, yaml.reader.ReaderError) as e:
         raise YamlParseError(f'Failed decoding "{url}":\n{e}')
     except yaml.MarkedYAMLError as e:
-        raise YamlParseError((
-            f"""
-            YAML error at {url}
-            {e.problem_mark and "at line" + str(e.problem_mark.line)}
-            {e.problem_mark and "column" + str(e.problem_mark.column)}
-            {e.problem} {e.context or ""}
-            """
-        ))
+        raise YamlParseError(
+            f"YAML error at {url}, "
+            f"{e.problem_mark and 'at line ' + str(e.problem_mark.line)}, "
+            f"{e.problem_mark and 'column ' + str(e.problem_mark.column)}:\n"
+            f"{e.problem} {e.context or ''}"
+        )
 
 
 def write(y: Dict[str, Any], file: Union[Path, Resource]):
