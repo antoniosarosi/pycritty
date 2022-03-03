@@ -1,6 +1,7 @@
 # YAML IO
 
-from typing import Dict, Any, Union
+from io import BufferedRandom
+from typing import Callable, Dict, Any, Union
 from urllib.request import urlopen
 from urllib.parse import urlparse
 from urllib.error import URLError
@@ -28,6 +29,7 @@ def read(url: Union[str, Path, Resource]) -> Dict[str, Any]:
     """
 
     has_protocol = False
+    open_function: Callable[..., BufferedRandom]
     if isinstance(url, str):
         has_protocol = urlparse(url).scheme != ''
     if isinstance(url, Resource):
@@ -44,12 +46,14 @@ def read(url: Union[str, Path, Resource]) -> Dict[str, Any]:
         raise YamlIOError(f'Error trying to access "{url}":\n{e}')
     except (UnicodeDecodeError, yaml.reader.ReaderError) as e:
         raise YamlParseError(f'Failed decoding "{url}":\n{e}')
-    except yaml.YAMLError as e:
+    except yaml.MarkedYAMLError as e:
         raise YamlParseError((
-            f'YAML error at "{url}", '
-            f'at line {e.problem_mark.line}, '
-            f'column {e.problem_mark.column}:\n'
-            f'{e.problem} {e.context or ""}'
+            f"""
+            YAML error at {url}
+            {e.problem_mark and "at line" + str(e.problem_mark.line)}
+            {e.problem_mark and "column" + str(e.problem_mark.column)}
+            {e.problem} {e.context or ""}
+            """
         ))
 
 

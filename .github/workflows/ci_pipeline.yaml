@@ -13,7 +13,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install mypy
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
       - name: Run mypy
         run: mypy .
   Flake8-Validation:

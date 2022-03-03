@@ -80,7 +80,7 @@ setuptools.setup(
     install_requires=["PyYAML"],
     include_package_data=True,
     cmdclass={
-        'install': PostInstallHook,
+        'install': PostInstallHook,  # type: ignore
     },
     entry_points={
         "console_scripts": ["pycritty = pycritty.main:main"]

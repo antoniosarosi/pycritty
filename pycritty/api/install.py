@@ -2,13 +2,13 @@ from typing import Union
 from urllib.parse import urlparse
 from pathlib import Path
 from pycritty.resources import saves_dir, themes_dir
-from pycritty.resources.resource import Resource
+from pycritty.resources.resource import ConfigFile
 from pycritty.api.save import save_config
 
 
 def install(
     config_name: str = None,
-    url: Union[str, Path, Resource] = None,
+    url: Union[str, Path, ConfigFile] = None,
     as_theme=False,
     override=False
 ):
@@ -25,6 +25,6 @@ def install(
     """
 
     if config_name is None or len(config_name) == 0:
-        config_name = Path(urlparse(url).path).stem
+        config_name = Path(urlparse(str(url)).path).stem
     dest_parent = themes_dir if as_theme else saves_dir
     save_config(config_name, url, dest_parent, override)
