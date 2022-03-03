@@ -7,7 +7,7 @@ def formatter(indent_increment=2, max_help_position=40, width=None):
         prog,
         indent_increment,
         max_help_position,
-        width, 
+        width,
     )
 
 

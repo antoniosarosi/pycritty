@@ -1,4 +1,4 @@
-from typing import Dict, Any, Union
+from typing import Union
 from pathlib import Path
 from pycritty import PycrittyError
 from pycritty.io import log, yaml_io

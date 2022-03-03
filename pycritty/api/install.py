@@ -1,4 +1,4 @@
-from typing import Dict, Any, Union
+from typing import Union
 from urllib.parse import urlparse
 from pathlib import Path
 from pycritty.resources import saves_dir, themes_dir
