@@ -54,7 +54,6 @@ class Config:
 
         if errors > 0:
             raise ConfigError('\nFailed applying some settings')
-        
 
     def change_theme(self, theme: str):
         theme_file = resources.get_theme(theme)
@@ -160,7 +159,7 @@ class Config:
             self.config['window']['opacity'] = {}
             log.warn(f'"opacity" prop was not present in {resources.config_file}')
 
-        self.config['window']['opacity']  = opacity
+        self.config['window']['opacity'] = opacity
         log.ok(f'Opacity set to {opacity:.2f}')
 
     def change_padding(self, padding=(1, 1)):
@@ -201,4 +200,3 @@ def set_config(**kwargs):
         config.set(**kwargs)
     finally:
         config.apply()
- 

@@ -8,9 +8,14 @@ class PycrittyError(Exception):
 
 
 # Export public API
-from pycritty.api.config import Config, set_config
-from pycritty.api.install import install
-from pycritty.api.load import load_config
-from pycritty.api.save import save_config
-from pycritty.api.rm import remove
-from pycritty.api.ls import list_themes, list_fonts, list_configs, print_list
+from pycritty.api.config import Config, set_config  # noqa: F401, E402
+from pycritty.api.install import install  # noqa: F401, E402
+from pycritty.api.load import load_config  # noqa: F401, E402
+from pycritty.api.save import save_config  # noqa: F401, E402
+from pycritty.api.rm import remove  # noqa: F401, E402
+from pycritty.api.ls import (  # noqa: F401, E402
+    list_themes,
+    list_fonts,
+    list_configs,
+    print_list,
+)

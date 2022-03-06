@@ -64,7 +64,7 @@ setuptools.setup(
     version=__version__,
     author="Antonio Sarosi",
     author_email="sarosiantonio@gmail.com",
-    description="CLI program that allows you to change your alacritty config file with one command.",
+    description="CLI program that allows you to change your alacritty config file with one command.",  # noqa: E501
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/antoniosarosi/pycritty",
@@ -80,7 +80,7 @@ setuptools.setup(
     install_requires=["PyYAML"],
     include_package_data=True,
     cmdclass={
-        'install': PostInstallHook,
+        'install': PostInstallHook,  # type: ignore
     },
     entry_points={
         "console_scripts": ["pycritty = pycritty.main:main"]

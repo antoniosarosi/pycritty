@@ -1,7 +1,8 @@
-from typing import Dict, Any, List
-from pycritty.resources import saves_dir, themes_dir
-from pycritty.resources.resource import Resource, ConfigFile
+from typing import List
+
 from pycritty.io import log
+from pycritty.resources import saves_dir, themes_dir
+from pycritty.resources.resource import ConfigFile
 
 
 def remove(configs: List[str], from_themes=False, force=False):

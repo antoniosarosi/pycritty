@@ -1,4 +1,3 @@
-from typing import Dict, Any
 from pycritty import PycrittyError
 from pycritty.io import log, yaml_io
 from pycritty.resources import saves_dir, config_file, ConfigFile
