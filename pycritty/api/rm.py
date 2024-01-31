@@ -8,7 +8,7 @@ from pycritty.resources.resource import ConfigFile
 def remove(configs: List[str], from_themes=False, force=False):
     config_parent = themes_dir if from_themes else saves_dir
     for conf in configs:
-        file = ConfigFile(config_parent.path, conf, ConfigFile.YAML)
+        file = ConfigFile(config_parent.path, conf, ConfigFile.FILES)
         if not file.exists():
             log.warn(f'{conf} ->', log.Color.BOLD, file, log.Color.YELLOW, 'not found')
             continue
