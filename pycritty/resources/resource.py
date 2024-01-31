@@ -39,7 +39,7 @@ class ConfigDir(Resource):
 class ConfigFile(Resource):
     """Class used to manage config files that may have many possible extensions"""
 
-    YAML = ['yml', 'yaml']
+    FILES = ['toml', 'yml', 'yaml']
 
     def __init__(self, parent: Path, name: str, extensions: List[str]):
         if len(extensions) > 0:

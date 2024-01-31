@@ -1,8 +1,9 @@
-from typing import Dict, Callable, Any
 from collections.abc import Mapping
-from pycritty import resources, PycrittyError
-from pycritty.io import log, yaml_io
+from typing import Dict, Callable, Any
 
+from pycritty import resources, PycrittyError
+from pycritty.io import log, toml_io, yaml_io
+from pathlib import  Path
 
 class ConfigError(PycrittyError):
     def __init__(self, message='Error applying configuration'):
@@ -19,12 +20,12 @@ class Config:
     """
 
     def __init__(self):
-        self.config = yaml_io.read(resources.config_file.get_or_create())
+        self.config = toml_io.read(resources.config_file.get_or_create())
         if self.config is None:
             self.config = {}
 
     def apply(self):
-        yaml_io.write(self.config, resources.config_file)
+        toml_io.write(self.config, resources.config_file)
 
     def set(self, **kwargs):
         """Set multiple changes at once
@@ -57,14 +58,21 @@ class Config:
 
     def change_theme(self, theme: str):
         theme_file = resources.get_theme(theme)
+        theme_type = Path(theme_file.path).suffix
+        theme = None
+
         if not theme_file.exists():
             raise PycrittyError(f'Theme "{theme}" not found')
 
-        theme_yaml = yaml_io.read(theme_file)
-        if theme_yaml is None:
+        if theme_type != ".toml":
+            theme = yaml_io.read(theme_file)
+            if 'colors' not in theme:
+                raise ConfigError(f'{theme_file} does not contain color config')
+        else:
+            theme = toml_io.read(theme_file)
+
+        if theme is None:
             raise ConfigError(f'File {theme_file} is empty')
-        if 'colors' not in theme_yaml:
-            raise ConfigError(f'{theme_file} does not contain color config')
 
         expected_colors = [
             'black',
@@ -84,14 +92,14 @@ class Config:
         }
 
         for k in expected_props:
-            if k not in theme_yaml['colors']:
+            if k not in theme['colors']:
                 log.warn(f'Missing "colors:{k}" for theme "{theme}"')
                 continue
             for v in expected_props[k]:
-                if v not in theme_yaml['colors'][k]:
+                if v not in theme['colors'][k]:
                     log.warn(f'Missing "colors:{k}:{v}" for theme "{theme}"')
 
-        self.config['colors'] = theme_yaml['colors']
+        self.config['colors'] = theme['colors']
         log.ok(f'Theme {theme} applied')
 
     def change_font(self, font: str):

@@ -6,18 +6,9 @@ from urllib.request import urlopen
 from urllib.parse import urlparse
 from urllib.error import URLError
 from pathlib import Path
-import yaml
 from pycritty.resources.resource import Resource
-from pycritty import PycrittyError
-
-
-class YamlIOError(PycrittyError):
-    pass
-
-
-class YamlParseError(PycrittyError):
-    pass
-
+from pycritty.io.error import FileIOError, FileParseError
+import yaml
 
 def read(url: Union[str, Path, Resource]) -> Dict[str, Any]:
     """Read YAML from a URL or from the local file system
@@ -43,28 +34,13 @@ def read(url: Union[str, Path, Resource]) -> Dict[str, Any]:
         with open_function(url) as f:
             return yaml.load(f, Loader=yaml.FullLoader)
     except (IOError, URLError) as e:
-        raise YamlIOError(f'Error trying to access "{url}":\n{e}')
+        raise FileIOError(f'Error trying to access "{url}":\n{e}')
     except (UnicodeDecodeError, yaml.reader.ReaderError) as e:
-        raise YamlParseError(f'Failed decoding "{url}":\n{e}')
+        raise FileParseError(f'Failed decoding "{url}":\n{e}')
     except yaml.MarkedYAMLError as e:
-        raise YamlParseError(
+        raise FileParseError(
             f"YAML error at {url}, "
             f"{e.problem_mark and 'at line ' + str(e.problem_mark.line)}, "
             f"{e.problem_mark and 'column ' + str(e.problem_mark.column)}:\n"
             f"{e.problem} {e.context or ''}"
         )
-
-
-def write(y: Dict[str, Any], file: Union[Path, Resource]):
-    """Write YAML to a file in the local system
-
-    >>> write({'example': 123}, Path().home() / 'exmaple.yaml')
-    """
-
-    if isinstance(file, Resource):
-        file = file.path
-    try:
-        with open(file, 'w') as f:
-            yaml.dump(y, f)
-    except IOError as e:
-        raise YamlIOError(f'Failed writing to {file}:\n{e}')
