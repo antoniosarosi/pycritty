@@ -10,7 +10,7 @@ class TestListFonts:
     def test_it_should_raise_pycritty_error_when_file_does_not_exist(self):
         target_file = Mock(
             spec=ConfigFile,
-            path=Path().cwd() / "example.yaml",
+            path=Path().cwd() / "example.toml",
             exists=Mock(return_value=False),
         )
 
@@ -18,36 +18,36 @@ class TestListFonts:
             list_fonts(target_file)
 
     @pytest.mark.parametrize("fonts_content", [None, {}])
-    @patch("pycritty.api.ls.yaml_io")
+    @patch("pycritty.api.ls.toml_io")
     def test_it_should_return_empty_fonts_when_file_has_no_content(
-        self, mock_yaml_io: MagicMock, fonts_content
+        self, mock_toml_io: MagicMock, fonts_content
     ):
         target_file = Mock(
             spec=ConfigFile,
-            path=Path().cwd() / "example.yaml",
+            path=Path().cwd() / "example.toml",
             exists=Mock(return_value=True),
         )
-        mock_yaml_io.read.return_value = fonts_content
+        mock_toml_io.read.return_value = fonts_content
 
         fonts = list_fonts(target_file)
 
-        mock_yaml_io.read.assert_called_once_with(target_file)
+        mock_toml_io.read.assert_called_once_with(target_file)
         assert list(fonts) == []
 
-    @patch("pycritty.api.ls.yaml_io")
-    def test_it_should_return_fonts(self, mock_yaml_io: MagicMock):
+    @patch("pycritty.api.ls.toml_io")
+    def test_it_should_return_fonts(self, mock_toml_io: MagicMock):
         target_file = Mock(
             spec=ConfigFile,
-            path=Path().cwd() / "example.yaml",
+            path=Path().cwd() / "example.toml",
             exists=Mock(return_value=True),
         )
-        mock_yaml_io.read.return_value = {
+        mock_toml_io.read.return_value = {
             "fonts": {"onedark": "OneDark", "cascadia": "Cascadia"}
         }
 
         fonts = list_fonts(target_file)
 
-        mock_yaml_io.read.assert_called_once_with(target_file)
+        mock_toml_io.read.assert_called_once_with(target_file)
         assert list(fonts) == ["onedark", "cascadia"]
 
 
